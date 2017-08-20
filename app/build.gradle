@@ -9,8 +9,13 @@ android {
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
+    
+    sourceSets.main {
+        jniLibs.srcDir 'src/main/lib'
+    }
+    
     buildTypes {
         release {
             minifyEnabled false

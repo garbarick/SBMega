@@ -2,6 +2,11 @@
 <resources>
 
     <string name="app_name">SBMega</string>
-    <string name="hello_world">Hello world!</string>
 
+    <string name="login_email">Email</string>
+    <string name="login_password">Password</string>
+    <string name="logon">Logon</string>
+
+    <string name="error_incorrect_email_or_password">Incorrect Email or Password</string>
+    
 </resources>
