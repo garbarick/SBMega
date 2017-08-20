@@ -19,6 +19,9 @@ public class Main extends Activity implements MegaRequestListenerInterface
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        hide(R.id.login_progress);
+        show(R.id.login_form);
+
         MainApplication app = (MainApplication) getApplication();
 		megaApi = app.getMegaApi();
 
@@ -75,6 +78,9 @@ public class Main extends Activity implements MegaRequestListenerInterface
         hide(R.id.login_form);
         show(R.id.login_progress);
 
+        ProgressBar bar = findView(R.id.login_progress);
+        bar.setMax(100);
+
         new LogonTask(megaApi, this).execute(email, password);
     }
 
@@ -92,35 +98,71 @@ public class Main extends Activity implements MegaRequestListenerInterface
     public void onRequestUpdate(MegaApiJava api, MegaRequest request)
     {
         Log.info(this, "RequesUpdate: " + request.getRequestString());
+
+        switch (request.getType())
+        {
+            case MegaRequest.TYPE_FETCH_NODES:
+                {
+                    ProgressBar bar = findView(R.id.login_progress);
+                    bar.setProgress(33);
+
+                    if (request.getTotalBytes() > 0)
+                    {
+                        double progressValue = 100 * request.getTransferredBytes() / request.getTotalBytes();
+                        if (progressValue > 100 || progressValue < 0)
+                        {
+                            progressValue = 100;
+                        }
+                        bar.setProgress((int)progressValue);               
+                    }
+                }
+        }
     }
 
     public void onRequestFinish(MegaApiJava api, MegaRequest request, MegaError e)
     {
         Log.info(this, "RequestFinish: " + request.getRequestString());
 
-        if (request.getType() == MegaRequest.TYPE_LOGIN)
+        switch (request.getType())
         {
-            if (e.getErrorCode() == MegaError.API_OK)
-            {
-                setTitle(getEditText(R.id.login_email));
-                //megaApi.fetchNodes(this);
-            }
-            else
-            {
-                String errorMessage = e.getErrorString();
-                switch (e.getErrorCode())
+            case MegaRequest.TYPE_LOGIN:
+                if (e.getErrorCode() == MegaError.API_OK)
                 {
-                    case MegaError.API_ENOENT:
-                    case MegaError.API_EARGS:
-                        errorMessage = getString(R.string.error_incorrect_email_or_password);
-                        break;
-				}
-                Toast.makeText(this, e.getErrorCode() + ": " + errorMessage, Toast.LENGTH_LONG).show();
+                    setTitle(getEditText(R.id.login_email));
+                    megaApi.fetchNodes(this);
+                }
+                else
+                {
+                    String errorMessage = e.getErrorString();
+                    switch (e.getErrorCode())
+                    {
+                        case MegaError.API_ENOENT:
+                        case MegaError.API_EARGS:
+                            errorMessage = getString(R.string.error_incorrect_email_or_password);
+                            break;
+                    }
+                    Toast.makeText(this, e.getErrorCode() + ": " + errorMessage, Toast.LENGTH_LONG).show();
+                    hide(R.id.login_progress);
+                    show(R.id.login_form);
+                }
+                break;
 
-                hide(R.id.login_progress);
-                show(R.id.login_form);
-            }
-		}
+            case MegaRequest.TYPE_FETCH_NODES:
+                if (e.getErrorCode() == MegaError.API_OK)
+                {
+                    //Intent intent = new Intent(this, NavigationActivity.class);
+                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    //startActivity(intent);
+                    //finish();
+                }
+                else
+                {
+                    Toast.makeText(this, e.getErrorString(), Toast.LENGTH_LONG).show();
+                    hide(R.id.login_progress);
+                    show(R.id.login_form);
+                }
+                break;
+        }
     }
 
     public void onRequestTemporaryError(MegaApiJava api, MegaRequest request, MegaError e)

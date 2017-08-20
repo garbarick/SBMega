@@ -10,7 +10,7 @@
 		android:layout_height="wrap_content"
 		android:layout_width="match_parent"
 		android:orientation="vertical"
-        android:gravity="center"
+		android:gravity="center"
 		android:id="@+id/login_form">
 
 		<TextView
@@ -35,19 +35,18 @@
 			android:layout_width="match_parent"
 			android:id="@+id/login_password"/>
 
-        <Button
-            android:layout_height="wrap_content"
-            android:text="@string/logon"
-            android:layout_width="wrap_content"
-            android:id="@+id/logon"/>
+		<Button
+			android:layout_height="wrap_content"
+			android:text="@string/logon"
+			android:layout_width="wrap_content"
+			android:id="@+id/logon"/>
 
-        </LinearLayout>
+	</LinearLayout>
 
 	<ProgressBar
 		android:layout_height="wrap_content"
-		style="?android:attr/progressBarStyleLarge"
-		android:layout_width="wrap_content"
-		android:visibility="gone"
+		style="?android:attr/progressBarStyleHorizontal"
+		android:layout_width="match_parent"
         android:id="@+id/login_progress"/>
 
 </LinearLayout>
