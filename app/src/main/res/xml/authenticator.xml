@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<account-authenticator
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:accountType="ru.net.serbis.mega"
+	android:icon="@drawable/app"
+	android:smallIcon="@drawable/app"
+	android:label="@string/app_name"/>

@@ -5,8 +5,11 @@
 
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
-    <string name="logon">Logon</string>
+    <string name="login">Login</string>
 
     <string name="error_incorrect_email_or_password">Incorrect Email or Password</string>
+	<string name="error_account_already_exists">Account Already Exists</string>
     
+	<string name="new_account">New Account</string>
+	<string name="delete_account">Delete Account</string>
 </resources>
