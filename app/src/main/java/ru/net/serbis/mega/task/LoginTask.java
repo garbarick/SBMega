@@ -3,15 +3,14 @@ package ru.net.serbis.mega.task;
 import android.os.*;
 import nz.mega.sdk.*;
 import ru.net.serbis.mega.*;
-import ru.net.serbis.mega.activity.*;
 import ru.net.serbis.mega.data.*;
-import android.content.*;
 
 public class LoginTask extends AsyncTask<String, Void, Token> implements MegaRequestListenerInterface
 {
     private MegaApiAndroid megaApi;
-    private Login login;
+    private LoginCallback callback;
 	private Token token;
+	private String email;
 
 	public LoginTask(MegaApiAndroid megaApi)
     {
@@ -23,17 +22,18 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
 		this(app.getMegaApi());
 	}
 	
-    public LoginTask(MegaApiAndroid megaApi, Login login)
+    public LoginTask(MegaApiAndroid megaApi, LoginCallback callback)
     {
         this(megaApi);
-        this.login = login;
+        this.callback = callback;
     }
     
     @Override
     public Token doInBackground(String... params)
     {
+		email = params[0];
         String privateKey = megaApi.getBase64PwKey(params[1]);
-        String publicKey = megaApi.getStringHash(privateKey, params[0]);
+        String publicKey = megaApi.getStringHash(privateKey, email);
         return new Token(publicKey, privateKey);
     }
 
@@ -41,25 +41,19 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
     protected void onPostExecute(Token token)
     {
         this.token = token;
-		megaApi.fastLogin(login.getEmail(), token.getPublicKey(), token.getPrivateKey(), this);
+		megaApi.fastLogin(email, token.getPublicKey(), token.getPrivateKey(), this);
     }
 	
 	public void onRequestStart(MegaApiJava api, MegaRequest request)
     {
-        Log.info(this, "RequestStart: " + request.getRequestString());
     }
 
     public void onRequestUpdate(MegaApiJava api, MegaRequest request)
     {
-        Log.info(this, "RequesUpdate: " + request.getRequestString());
-
-        /*switch (request.getType())
+        switch (request.getType())
         {
             case MegaRequest.TYPE_FETCH_NODES:
                 {
-                    ProgressBar bar = findView(R.id.login_progress);
-                    bar.setProgress(33);
-
                     if (request.getTotalBytes() > 0)
                     {
                         double progressValue = 100 * request.getTransferredBytes() / request.getTotalBytes();
@@ -67,53 +61,57 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
                         {
                             progressValue = 100;
                         }
-                        bar.setProgress((int)progressValue);               
+						callback.progress((int) progressValue);         
                     }
                 }
-        }*/
+        }
     }
 
     public void onRequestFinish(MegaApiJava api, MegaRequest request, MegaError error)
     {
-        Log.info(this, "RequestFinish: " + request.getRequestString());
-
         switch (request.getType())
         {
             case MegaRequest.TYPE_LOGIN:
 			{
                 if (error.getErrorCode() == MegaError.API_OK)
                 {
-					login.onLogin(token);
-                    //setTitle(getEditText(R.id.login_email));
-                    //megaApi.fetchNodes(this);
+					callback.onLogin(token, this);
                 }
                 else
                 {
-					login.onLoginError(error);
+					callback.onError(error);
                 }
 			}
             break;
 
-            /*case MegaRequest.TYPE_FETCH_NODES:
-                if (e.getErrorCode() == MegaError.API_OK)
+            case MegaRequest.TYPE_FETCH_NODES:
+			{
+                if (error.getErrorCode() == MegaError.API_OK)
                 {
-                    //Intent intent = new Intent(this, NavigationActivity.class);
-                    //intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                    //startActivity(intent);
-                    //finish();
+                    callback.onFetchNode();
                 }
                 else
                 {
-                    Toast.makeText(this, e.getErrorString(), Toast.LENGTH_LONG).show();
-                    hide(R.id.login_progress);
-                    show(R.id.login_form);
+                    callback.onError(error);
                 }
-                break;*/
+			}
+            break;
+			
+			case MegaRequest.TYPE_LOGOUT:
+			{
+				if (error.getErrorCode() == MegaError.API_OK)
+				{
+					callback.onLogout(token);
+				}
+				else
+				{
+					callback.onError(error);
+				}
+			}
         }
     }
 
-    public void onRequestTemporaryError(MegaApiJava api, MegaRequest request, MegaError e)
+    public void onRequestTemporaryError(MegaApiJava api, MegaRequest request, MegaError error)
     {
-        Log.info(this, "RequestTemporaryError:" + e.getErrorString());
     }
 }

@@ -1,17 +1,18 @@
 package ru.net.serbis.mega.activity;
 
 import android.accounts.*;
+import android.content.*;
 import android.os.*;
 import android.view.*;
 import android.widget.*;
 import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.account.*;
-import ru.net.serbis.mega.data.*;
+import ru.net.serbis.mega.adapter.*;
 
-public class Accounts extends List implements OnAccountsUpdateListener, AdapterView.OnItemClickListener
+public class Accounts extends ListActivity implements OnAccountsUpdateListener
 {
 	private Handler handler = new Handler();
-	private ArrayAdapter<AccountView> adapter;
+	private AccountsAdapter adapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -23,10 +24,9 @@ public class Accounts extends List implements OnAccountsUpdateListener, AdapterV
 			addNewAccount();
 		}
 		
-		ListView list = findView(R.id.list);
-		adapter = new ArrayAdapter<AccountView>(this, android.R.layout.simple_list_item_1, android.R.id.text1);
+		adapter = new AccountsAdapter(this);
 		list.setAdapter(adapter);
-		list.setOnItemClickListener(this);
+		
 		registerForContextMenu(list);
 	}
 	
@@ -88,7 +88,7 @@ public class Accounts extends List implements OnAccountsUpdateListener, AdapterV
         if (view.getId() == R.id.list)
         {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-            menu.setHeaderTitle(adapter.getItem(info.position).getAccount().name);
+            menu.setHeaderTitle(adapter.getItem(info.position).name);
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(R.menu.account, menu);
         }
@@ -102,7 +102,7 @@ public class Accounts extends List implements OnAccountsUpdateListener, AdapterV
             case R.id.deleteAccount:
             {
 				AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-				Account account = adapter.getItem(info.position).getAccount();
+				Account account = adapter.getItem(info.position);
 				manager.removeAccountExplicitly(account);
             }
             return true;
@@ -135,7 +135,7 @@ public class Accounts extends List implements OnAccountsUpdateListener, AdapterV
 		{
 			if (AccountMega.TYPE.equals(account.type))
 			{
-				adapter.add(new AccountView(account));
+				adapter.add(account);
 			}
 		}
 		adapter.setNotifyOnChange(true);
@@ -145,7 +145,11 @@ public class Accounts extends List implements OnAccountsUpdateListener, AdapterV
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id)
 	{
-		Account account = adapter.getItem(position).getAccount();
-		String pass = manager.getPassword(account);
+		Account account = adapter.getItem(position);
+		Intent intent = new Intent(this, Login.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra(Login.ACCOUNT, account);
+		startActivity(intent);
+		finish();
 	}
 }

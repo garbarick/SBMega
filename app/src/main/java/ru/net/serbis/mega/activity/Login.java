@@ -12,25 +12,37 @@ import ru.net.serbis.mega.account.*;
 import ru.net.serbis.mega.data.*;
 import ru.net.serbis.mega.task.*;
 
-public class Login extends AccountAuthenticatorActivity
+public class Login extends AccountAuthenticatorActivity implements LoginCallback
 {
 	public static final String TOKEN_TYPE = AccountMega.TYPE + ".TOKEN_TYPE";
-	
+	public static final String ACCOUNT = AccountMega.TYPE + ".ACCOUNT";
+
     private MegaApiAndroid megaApi;
+	private boolean create;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-
-        hide(R.id.login_progress);
-        show(R.id.login_form);
-
-        App app = (App) getApplication();
+		
+		App app = (App) getApplication();
 		megaApi = app.getMegaApi();
 
-        initLogon();
+		Intent intent = getIntent();
+		Account account = intent.getParcelableExtra(ACCOUNT);
+		if (account != null)
+		{
+			AccountManager manager = AccountManager.get(this);
+			login(account.name, manager.getPassword(account));
+		}
+		else
+		{
+			create = true;
+        	hide(R.id.login_progress);
+        	show(R.id.login_form);
+        	initLogon();
+		}
     }
 
     private <T extends View> T findView(int id)
@@ -43,12 +55,7 @@ public class Login extends AccountAuthenticatorActivity
         EditText text = findView(id);
         return text.getText().toString();
     }
-	
-	public String getEmail()
-	{
-		return getEditText(R.id.login_email);
-	}
-	
+
     private void hide(int id)
     {
         View view = findView(id);
@@ -85,20 +92,82 @@ public class Login extends AccountAuthenticatorActivity
         }        
         String email = getEditText(R.id.login_email);
         String password = getEditText(R.id.login_password);
-        hide(R.id.login_form);
+
+		login(email, password);
+    }
+
+	private void login(String email, String password)
+	{
+		hide(R.id.login_form);
         show(R.id.login_progress);
 
         ProgressBar bar = findView(R.id.login_progress);
         bar.setMax(100);
 
         new LoginTask(megaApi, this).execute(email, password);
-    }
-	
-	public void onLogin(Token token)
+	}
+
+	@Override
+	public void onLogin(Token token, MegaRequestListenerInterface listener)
 	{
-		String email = getEmail();
+		if (create)
+		{
+			megaApi.logout(listener);
+		}
+		else
+		{
+			megaApi.fetchNodes(listener);
+		}
+	}
+
+	@Override
+	public void onError(MegaError error)
+	{
+		String errorMessage = error.getErrorString();
+		switch (error.getErrorCode())
+		{
+			case MegaError.API_ENOENT:
+			case MegaError.API_EARGS:
+				errorMessage = getString(R.string.error_incorrect_email_or_password);
+				break;
+		}
+		Toast.makeText(this, error.getErrorCode() + ": " + errorMessage, Toast.LENGTH_LONG).show();
+
+		if (create)
+		{
+			hide(R.id.login_progress);
+			show(R.id.login_form);
+		}
+		else
+		{
+			Intent intent = new Intent(this, Accounts.class);
+			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(intent);
+			finish();
+		}
+	}
+
+	@Override
+	public void progress(int persent)
+	{
+		ProgressBar bar = findView(R.id.login_progress);
+		bar.setProgress(persent);
+	}
+	
+	public void onFetchNode()
+	{
+		Intent intent = new Intent(this, Browser.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(intent);
+		finish();
+	}
+
+	@Override
+	public void onLogout(Token token)
+	{
+		String email = getEditText(R.id.login_email);
 		String password = getEditText(R.id.login_password);
-		
+
 		AccountManager manager = AccountManager.get(this);
 		Bundle result = new Bundle();
 
@@ -112,24 +181,9 @@ public class Login extends AccountAuthenticatorActivity
 		{
 			result.putString(AccountManager.KEY_ERROR_MESSAGE, getString(R.string.error_account_already_exists));
 		}
-		
+
 		setAccountAuthenticatorResult(result);
 		setResult(RESULT_OK);
 		finish();
-	}
-	
-	public void onLoginError(MegaError error)
-	{
-		String errorMessage = error.getErrorString();
-		switch (error.getErrorCode())
-		{
-			case MegaError.API_ENOENT:
-			case MegaError.API_EARGS:
-				errorMessage = getString(R.string.error_incorrect_email_or_password);
-				break;
-		}
-		Toast.makeText(this, error.getErrorCode() + ": " + errorMessage, Toast.LENGTH_LONG).show();
-		hide(R.id.login_progress);
-		show(R.id.login_form);
 	}
 }
