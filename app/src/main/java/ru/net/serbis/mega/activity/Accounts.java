@@ -9,10 +9,9 @@ import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.account.*;
 import ru.net.serbis.mega.adapter.*;
 
-public class Accounts extends ListActivity implements OnAccountsUpdateListener
+public class Accounts extends ListActivity<Account> implements OnAccountsUpdateListener
 {
 	private Handler handler = new Handler();
-	private AccountsAdapter adapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -26,8 +25,6 @@ public class Accounts extends ListActivity implements OnAccountsUpdateListener
 		
 		adapter = new AccountsAdapter(this);
 		list.setAdapter(adapter);
-		
-		registerForContextMenu(list);
 	}
 	
 	private void addNewAccount()
@@ -56,60 +53,49 @@ public class Accounts extends ListActivity implements OnAccountsUpdateListener
 			null
 		);
 	}
-	
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.accounts, menu);
-        return true;
-    }
-	
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
+	@Override
+	protected int getOptionsMenu()
+	{
+		return R.menu.accounts;
+	}
+
+	@Override
+	protected int getContextMenu()
+	{
+		return R.menu.account;
+	}
+
+	@Override
+	protected String getContextMenuHeader(Account account)
+	{
+		return account.name;
+	}
+
+	@Override
+	public boolean onItemMenuSelected(int id, final Account account)
+	{
+        switch (id)
         {
-            case R.id.newAccount:
-            {
+            case R.id.add:
             	addNewAccount();
-            }
-            return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
+            	return true;
+			
+			case R.id.delete:
+				new SureDialog(
+					this,
+					R.string.mess_delete_account,
+					new DialogInterface.OnClickListener()
+					{
+						@Override
+						public void onClick(DialogInterface dialog, int which)
+						{
+							manager.removeAccountExplicitly(account);
+						}
+					});
+				return true;
         }
-    }
-	
-    @Override
-    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo)
-    {
-        if (view.getId() == R.id.list)
-        {
-            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-            menu.setHeaderTitle(adapter.getItem(info.position).name);
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate(R.menu.account, menu);
-        }
-    }
-	
-	@Override
-    public boolean onContextItemSelected(MenuItem item)
-    {
-        switch (item.getItemId())
-        {
-            case R.id.deleteAccount:
-            {
-				AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-				Account account = adapter.getItem(info.position);
-				manager.removeAccountExplicitly(account);
-            }
-            return true;
-
-            default:
-                return super.onContextItemSelected(item);
-        }
+		return super.onItemMenuSelected(id, account);
     }
 
 	@Override

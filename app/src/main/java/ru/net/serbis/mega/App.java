@@ -1,7 +1,6 @@
 package ru.net.serbis.mega;
 
 import android.app.*;
-import android.content.pm.*;
 import nz.mega.sdk.*;
 
 public class App extends Application
@@ -32,18 +31,7 @@ public class App extends Application
 	{
 		if(megaApi == null)
 		{
-			String path = null;
-			try
-			{
-				PackageInfo info = getPackageManager().getPackageInfo(getPackageName(), 0);
-				path = info.applicationInfo.dataDir + "/";
-			}
-			catch (Throwable e)
-			{
-				Log.info(this, e);
-			}
-			
-			megaApi = new MegaApiAndroid(App.APP_KEY, App.USER_AGENT, path);
+			megaApi = new MegaApiAndroid(App.APP_KEY, App.USER_AGENT, getFilesDir().getParentFile() + "/");
 		}
 		return megaApi;
 	}

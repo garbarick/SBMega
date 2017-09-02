@@ -39,38 +39,14 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		else
 		{
 			create = true;
-        	hide(R.id.login_progress);
-        	show(R.id.login_form);
+        	Tools.show(this, R.id.login_form);
         	initLogon();
 		}
     }
 
-    private <T extends View> T findView(int id)
-    {
-        return (T) findViewById(id);
-    }
-
-    private String getEditText(int id)
-    {
-        EditText text = findView(id);
-        return text.getText().toString();
-    }
-
-    private void hide(int id)
-    {
-        View view = findView(id);
-        view.setVisibility(View.GONE);
-    }
-
-    private void show(int id)
-    {
-        View view = findView(id);
-        view.setVisibility(View.VISIBLE);
-    }
-
     private void initLogon()
     {
-        Button login = findView(R.id.login);
+        Button login = Tools.findView(this, R.id.login);
         login.setOnClickListener(
             new View.OnClickListener()
             {
@@ -90,20 +66,15 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
             InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }        
-        String email = getEditText(R.id.login_email);
-        String password = getEditText(R.id.login_password);
+        String email = Tools.getEditText(this, R.id.login_email);
+        String password = Tools.getEditText(this, R.id.login_password);
 
 		login(email, password);
     }
 
 	private void login(String email, String password)
 	{
-		hide(R.id.login_form);
-        show(R.id.login_progress);
-
-        ProgressBar bar = findView(R.id.login_progress);
-        bar.setMax(100);
-
+		Tools.hide(this, R.id.login_form);
         new LoginTask(megaApi, this).execute(email, password);
 	}
 
@@ -135,8 +106,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 
 		if (create)
 		{
-			hide(R.id.login_progress);
-			show(R.id.login_form);
+			Tools.show(this, R.id.login_form);
 		}
 		else
 		{
@@ -150,7 +120,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	@Override
 	public void progress(int persent)
 	{
-		ProgressBar bar = findView(R.id.login_progress);
+		ProgressBar bar = Tools.findView(this, R.id.login_progress);
 		bar.setProgress(persent);
 	}
 	
@@ -165,8 +135,8 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	@Override
 	public void onLogout(Token token)
 	{
-		String email = getEditText(R.id.login_email);
-		String password = getEditText(R.id.login_password);
+		String email = Tools.getEditText(this, R.id.login_email);
+		String password = Tools.getEditText(this, R.id.login_password);
 
 		AccountManager manager = AccountManager.get(this);
 		Bundle result = new Bundle();

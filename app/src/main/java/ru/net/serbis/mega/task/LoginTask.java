@@ -53,62 +53,34 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
         switch (request.getType())
         {
             case MegaRequest.TYPE_FETCH_NODES:
-                {
-                    if (request.getTotalBytes() > 0)
-                    {
-                        double progressValue = 100 * request.getTransferredBytes() / request.getTotalBytes();
-                        if (progressValue > 100 || progressValue < 0)
-                        {
-                            progressValue = 100;
-                        }
-						callback.progress((int) progressValue);         
-                    }
-                }
+				callback.progress(Tools.getProgress(request));
+				break;
         }
     }
 
     public void onRequestFinish(MegaApiJava api, MegaRequest request, MegaError error)
     {
-        switch (request.getType())
-        {
-            case MegaRequest.TYPE_LOGIN:
-			{
-                if (error.getErrorCode() == MegaError.API_OK)
-                {
+		if (error.getErrorCode() == MegaError.API_OK)
+		{
+        	switch (request.getType())
+        	{
+            	case MegaRequest.TYPE_LOGIN:
 					callback.onLogin(token, this);
-                }
-                else
-                {
-					callback.onError(error);
-                }
-			}
-            break;
+            		break;
 
-            case MegaRequest.TYPE_FETCH_NODES:
-			{
-                if (error.getErrorCode() == MegaError.API_OK)
-                {
-                    callback.onFetchNode();
-                }
-                else
-                {
-                    callback.onError(error);
-                }
-			}
-            break;
+            	case MegaRequest.TYPE_FETCH_NODES:
+				    callback.onFetchNode();
+            		break;
 			
-			case MegaRequest.TYPE_LOGOUT:
-			{
-				if (error.getErrorCode() == MegaError.API_OK)
-				{
+				case MegaRequest.TYPE_LOGOUT:
 					callback.onLogout(token);
-				}
-				else
-				{
-					callback.onError(error);
-				}
+					break;
 			}
         }
+		else
+		{
+			callback.onError(error);
+		}
     }
 
     public void onRequestTemporaryError(MegaApiJava api, MegaRequest request, MegaError error)
