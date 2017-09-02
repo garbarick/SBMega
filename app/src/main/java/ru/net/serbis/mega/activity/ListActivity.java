@@ -7,11 +7,12 @@ import android.view.*;
 import android.widget.*;
 import ru.net.serbis.mega.*;
 
-public abstract class ListActivity<T> extends Activity implements AdapterView.OnItemClickListener
+public abstract class ListActivity<T> extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener
 {
 	protected AccountManager manager;
 	protected ListView list;
 	protected ArrayAdapter<T> adapter;
+	protected boolean selectMode;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -22,7 +23,18 @@ public abstract class ListActivity<T> extends Activity implements AdapterView.On
 		manager = AccountManager.get(this);
 		list = Tools.findView(this, R.id.list);
 		list.setOnItemClickListener(this);
-		registerForContextMenu(list);
+		
+		selectMode = getIntent().getBooleanExtra(Constants.SELECT_MODE, false);
+		if (selectMode)
+		{
+			setResult(RESULT_CANCELED);
+			Tools.show(this, R.id.actions);
+			initActions();
+		}
+		else
+		{
+			registerForContextMenu(list);
+		}
 	}
 	
 	@Override
@@ -37,9 +49,13 @@ public abstract class ListActivity<T> extends Activity implements AdapterView.On
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(getOptionsMenu(), menu);
-        return true;
+		if (!selectMode)
+		{
+        	MenuInflater inflater = getMenuInflater();
+        	inflater.inflate(getOptionsMenu(), menu);
+        	return true;
+		}
+		return false;
     }
 	
 	@Override
@@ -66,8 +82,13 @@ public abstract class ListActivity<T> extends Activity implements AdapterView.On
             menu.setHeaderTitle(getContextMenuHeader(adapter.getItem(info.position)));
             MenuInflater inflater = getMenuInflater();
             inflater.inflate(getContextMenu(), menu);
+			editMenu(menu);
         }
     }
+	
+	protected void editMenu(ContextMenu menu)
+	{
+	}
 
 	@Override
     public boolean onContextItemSelected(MenuItem item)
@@ -79,4 +100,23 @@ public abstract class ListActivity<T> extends Activity implements AdapterView.On
 		}
 		return super.onContextItemSelected(item);
     }
+	
+	private void initActions()
+	{
+		Button ok = Tools.findView(this, R.id.ok);
+		ok.setOnClickListener(this);
+		Button cancel = Tools.findView(this, R.id.cancel);
+		cancel.setOnClickListener(this);
+	}
+
+	@Override
+	public void onClick(View view)
+	{
+		switch(view.getId())
+		{
+			case R.id.cancel:
+				finish();
+				break;
+		}
+	}
 }

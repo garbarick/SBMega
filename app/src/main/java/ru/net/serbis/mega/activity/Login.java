@@ -14,9 +14,6 @@ import ru.net.serbis.mega.task.*;
 
 public class Login extends AccountAuthenticatorActivity implements LoginCallback
 {
-	public static final String TOKEN_TYPE = AccountMega.TYPE + ".TOKEN_TYPE";
-	public static final String ACCOUNT = AccountMega.TYPE + ".ACCOUNT";
-
     private MegaApiAndroid megaApi;
 	private boolean create;
 
@@ -29,8 +26,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		App app = (App) getApplication();
 		megaApi = app.getMegaApi();
 
-		Intent intent = getIntent();
-		Account account = intent.getParcelableExtra(ACCOUNT);
+		Account account = getIntent().getParcelableExtra(Constants.ACCOUNT);
 		if (account != null)
 		{
 			AccountManager manager = AccountManager.get(this);
@@ -128,6 +124,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	{
 		Intent intent = new Intent(this, Browser.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		intent.putExtra(Constants.ACCOUNT, getIntent().getParcelableExtra(Constants.ACCOUNT));
 		startActivity(intent);
 		finish();
 	}

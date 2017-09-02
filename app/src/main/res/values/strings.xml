@@ -7,16 +7,19 @@
     <string name="login_password">Password</string>
     <string name="login">Login</string>
 
-
 	<string name="action_add">Add</string>
 	<string name="action_delete">Delete</string>
 	<string name="action_cancel">Cancel</string>
     <string name="action_ok">Ok</string>
 	<string name="action_download">Download</string>
 	<string name="action_logout">Logout</string>
+	<string name="action_go_to_rubbish">Go To Rubbish</string>
+	<string name="action_move">Move</string>
+	<string name="action_move_to_rubbish">Move To Rubbish</string>
 	
     <string name="error_incorrect_email_or_password">Incorrect Email or Password</string>
 	<string name="error_account_already_exists">Account Already Exists</string>
+	
 	<string name="mess_are_you_sure">Are you sure?</string>
 	<string name="mess_delete_account">Delete Account</string>
 	

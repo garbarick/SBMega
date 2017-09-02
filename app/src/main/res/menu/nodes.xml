@@ -4,7 +4,7 @@
         android:id="@+id/logout"
         android:title="@string/action_logout"/>
 	<item
-        android:id="@+id/add"
-        android:title="@string/action_add"/>
+        android:id="@+id/go_to_rubbish"
+        android:title="@string/action_go_to_rubbish"/>
     
 </menu>

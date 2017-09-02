@@ -26,7 +26,7 @@ public class Authenticator extends AbstractAccountAuthenticator
 	public Bundle addAccount(AccountAuthenticatorResponse response, String accountType, String tokenType, String[] features, Bundle options) throws NetworkErrorException
 	{
 		Intent intent = new Intent(app.getApplicationContext(), Login.class);
-		intent.putExtra(Login.TOKEN_TYPE, accountType);
+		intent.putExtra(Constants.TOKEN_TYPE, accountType);
 		intent.putExtra(AccountManager.KEY_ACCOUNT_AUTHENTICATOR_RESPONSE, response);
 		
 		Bundle bundle = new Bundle();

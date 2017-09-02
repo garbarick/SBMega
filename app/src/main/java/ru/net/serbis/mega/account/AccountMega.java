@@ -2,12 +2,10 @@ package ru.net.serbis.mega.account;
 
 import android.accounts.*;
 import android.os.*;
+import ru.net.serbis.mega.*;
 
 public class AccountMega extends Account
 {
-	public static final String TYPE = "ru.net.serbis.mega";
-	public static final String TOKEN = TYPE + ".TOKEN";
-	
 	public AccountMega(Parcel parcel)
 	{
 		super(parcel);
@@ -15,6 +13,6 @@ public class AccountMega extends Account
 	
 	public AccountMega(String name)
 	{
-		super(name, TYPE);
+		super(name, Constants.TYPE);
 	}
 }

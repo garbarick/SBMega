@@ -6,7 +6,6 @@ import android.os.*;
 import android.view.*;
 import android.widget.*;
 import ru.net.serbis.mega.*;
-import ru.net.serbis.mega.account.*;
 import ru.net.serbis.mega.adapter.*;
 
 public class Accounts extends ListActivity<Account> implements OnAccountsUpdateListener
@@ -18,20 +17,24 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 	{
 		super.onCreate(savedInstanceState);
 		
-		if (manager.getAccountsByType(AccountMega.TYPE).length == 0)
+		if (manager.getAccountsByType(Constants.TYPE).length == 0)
 		{
 			addNewAccount();
 		}
 		
 		adapter = new AccountsAdapter(this);
 		list.setAdapter(adapter);
+		if (selectMode)
+		{
+			Tools.hide(this, R.id.ok);
+		}
 	}
 	
 	private void addNewAccount()
 	{
 		manager.addAccount(
-			AccountMega.TYPE,
-			AccountMega.TOKEN, 
+			Constants.TYPE,
+			Constants.TOKEN, 
 			null,
 			null,
 			this,
@@ -119,7 +122,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 		adapter.clear();
 		for(Account account : accounts)
 		{
-			if (AccountMega.TYPE.equals(account.type))
+			if (Constants.TYPE.equals(account.type))
 			{
 				adapter.add(account);
 			}
@@ -134,7 +137,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 		Account account = adapter.getItem(position);
 		Intent intent = new Intent(this, Login.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.putExtra(Login.ACCOUNT, account);
+		intent.putExtra(Constants.ACCOUNT, account);
 		startActivity(intent);
 		finish();
 	}
