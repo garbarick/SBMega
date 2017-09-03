@@ -5,7 +5,7 @@ import ru.net.serbis.mega.account.*;
 import android.content.*;
 import android.os.*;
 
-public class ServiceMega extends Service
+public class AccountsService extends Service
 {
 	private Authenticator authenticator;
 	

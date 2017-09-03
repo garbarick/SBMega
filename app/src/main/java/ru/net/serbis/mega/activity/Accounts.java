@@ -8,10 +8,12 @@ import android.widget.*;
 import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.adapter.*;
 import ru.net.serbis.mega.data.*;
+import ru.net.serbis.mega.service.*;
 
 public class Accounts extends ListActivity<Account> implements OnAccountsUpdateListener
 {
 	private Handler handler = new Handler();
+    private FilesConnection connection = new FilesConnection();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -81,9 +83,15 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
             	return true;
                 
             case R.id.select_path:
-                Intent intent = new Intent(this, Accounts.class);
-                params.setActionSelectAccountPath(intent);
-                startActivityForResult(intent, 0);
+                {
+                    Intent intent = new Intent(this, Accounts.class);
+                    params.setActionSelectAccountPath(intent);
+                    startActivityForResult(intent, 0);
+                }
+                return true;
+                
+            case R.id.get_files_list:
+                getFilesList();
                 return true;
 			
 			case R.id.delete:
@@ -116,6 +124,24 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 		super.onPause();
 		manager.removeOnAccountsUpdatedListener(this);
 	}
+
+    @Override
+    protected void onStart()
+    {
+        super.onStart();
+        Intent intent = new Intent(this, FilesService.class);
+        bindService(intent, connection, Context.BIND_AUTO_CREATE);
+    }
+
+    @Override
+    protected void onStop()
+    {
+        super.onStop();
+        if (connection.isBound())
+        {
+            unbindService(connection);
+        }
+    }
 
 	@Override
 	public void onAccountsUpdated(Account[] accounts)
@@ -165,17 +191,47 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
                 {
                     case Constants.ACTION_SELECT_PATH:
                         Intent intent = new Intent(getIntent());
-                        params.selectPath(intent, params.selectPath);
-                        params.setAccount(intent, params.account);
+                        String path = "//sbmega/" + params.account.name + params.selectPath;
+                        params.selectPath(intent, path);
                         setResult(RESULT_OK, intent);
                         finish();
                         break;
                         
                     case Constants.ACTION_SELECT_ACCOUNT_PATH:
-                        Toast.makeText(this, "//sbmega/" + params.account.name + params.selectPath, Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, params.selectPath, Toast.LENGTH_LONG).show();
                         break;
                 }
             }
+        }
+    }
+    
+    private void getFilesList()
+    {
+        if (connection.isBound())
+        {
+            Message msg = Message.obtain(null, Constants.ACTION_GET_FILES_LIST, 0, 0);
+            msg.replyTo = new Messenger(
+                new Handler()
+                {
+                    @Override
+                    public void handleMessage(Message msg)
+                    {
+                        Toast.makeText(Accounts.this, msg.getData().getString(Constants.FILES_LIST), Toast.LENGTH_LONG).show();
+                    }
+                }
+            );
+            try
+            {
+                connection.getService().send(msg);
+            }
+            catch (RemoteException e)
+            {
+                Log.info(this, e);
+            }
+        }
+        else
+        {
+            Toast.makeText(this, "no connection...", Toast.LENGTH_LONG).show();    
         }
     }
 }

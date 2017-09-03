@@ -33,7 +33,7 @@
 			android:name=".activity.Browser"/>
 		
 		<service
-			android:name=".service.ServiceMega"
+			android:name=".service.AccountsService"
 			android:exported="false">
 			
 			<intent-filter>
@@ -45,6 +45,9 @@
 				android:resource="@xml/authenticator"/>
 			
 		</service>
+        
+        <service
+            android:name=".service.FilesService"/>
 		
     </application>
 

@@ -55,6 +55,4 @@ public class Params
         intent.putExtra(Constants.SELECT_MODE, true);
         intent.putExtra(Constants.ACTION, Constants.ACTION_SELECT_ACCOUNT_PATH);
     }
-    
-    
 }
