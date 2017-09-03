@@ -6,13 +6,14 @@ import android.os.*;
 import android.view.*;
 import android.widget.*;
 import ru.net.serbis.mega.*;
+import ru.net.serbis.mega.data.*;
 
 public abstract class ListActivity<T> extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener
 {
 	protected AccountManager manager;
 	protected ListView list;
 	protected ArrayAdapter<T> adapter;
-	protected boolean selectMode;
+    protected Params params;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -24,8 +25,8 @@ public abstract class ListActivity<T> extends Activity implements AdapterView.On
 		list = Tools.findView(this, R.id.list);
 		list.setOnItemClickListener(this);
 		
-		selectMode = getIntent().getBooleanExtra(Constants.SELECT_MODE, false);
-		if (selectMode)
+		params = new Params(getIntent());
+		if (params.selectMode)
 		{
 			setResult(RESULT_CANCELED);
 			Tools.show(this, R.id.actions);
@@ -49,7 +50,7 @@ public abstract class ListActivity<T> extends Activity implements AdapterView.On
 	@Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
-		if (!selectMode)
+		if (!params.selectMode)
 		{
         	MenuInflater inflater = getMenuInflater();
         	inflater.inflate(getOptionsMenu(), menu);

@@ -8,6 +8,7 @@ import nz.mega.sdk.*;
 import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.adapter.*;
 import ru.net.serbis.mega.task.*;
+import ru.net.serbis.mega.data.*;
 
 public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 {
@@ -71,8 +72,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 			case R.id.move:
 				{
 					Intent intent = new Intent(this, Browser.class);
-					intent.putExtra(Constants.SELECT_MODE, true);
-					intent.putExtra(Constants.PATH, megaApi.getNodePath(node));
+                    params.setActionMove(intent, megaApi.getNodePath(node));
 					startActivityForResult(intent, 0);
 				}
 				return true;
@@ -80,7 +80,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 			case R.id.move_to_rubbish:
 				new SureDialog(
 					this,
-					R.string.mess_delete_account,
+					R.string.action_move_to_rubbish,
 					new DialogInterface.OnClickListener()
 					{
 						@Override
@@ -141,7 +141,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 				break;
 
 			case MegaNode.TYPE_ROOT:
-				if (selectMode)
+				if (params.selectMode)
 				{
 					finish();
 				}
@@ -167,10 +167,21 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 	@Override
 	public void onLogout()
 	{
-		Intent intent = new Intent(this, Accounts.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		startActivity(intent);
-		finish();
+        if (params.selectMode &&
+            Constants.ACTION_SELECT_PATH == params.action)
+        {
+            Intent intent = new Intent(getIntent());
+            params.selectPath(intent, params.selectPath);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
+        else
+        {
+            Intent intent = new Intent(this, Accounts.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
 	}
 
 	@Override
@@ -216,7 +227,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 			case R.id.ok:
 				{
 					Intent intent = new Intent(getIntent());
-					intent.putExtra(Constants.SELECT_PATH, megaApi.getNodePath(node));
+                    params.selectPath(intent, megaApi.getNodePath(node));
 					setResult(RESULT_OK, intent);
 					finish();
 				}
@@ -225,19 +236,25 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent intent)
+	protected void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
 		if (RESULT_OK == resultCode)
         {
-			if (intent.getBooleanExtra(Constants.SELECT_MODE, false))
+            Params params = new Params(data);
+			if (params.selectMode)
 			{
-				String path = intent.getStringExtra(Constants.PATH);
-				MegaNode node =megaApi.getNodeByPath(path);
-
-				String selectPath = intent.getStringExtra(Constants.SELECT_PATH);
-				MegaNode selectNode =megaApi.getNodeByPath(selectPath);
-
-				megaApi.moveNode(node, selectNode, task);
+                switch(params.action)
+                {
+                    case Constants.ACTION_MOVE:
+                        MegaNode node = megaApi.getNodeByPath(params.path);
+                        MegaNode selectNode = megaApi.getNodeByPath(params.selectPath);
+                        megaApi.moveNode(node, selectNode, task);
+                        break;
+                        
+                    case Constants.ACTION_SELECT_PATH:
+                        this.params.selectPath = params.selectPath;
+                        megaApi.logout(task);
+                }
 			}
         }
 	}

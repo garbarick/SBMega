@@ -16,7 +16,8 @@
 	<string name="action_go_to_rubbish">Go To Rubbish</string>
 	<string name="action_move">Move</string>
 	<string name="action_move_to_rubbish">Move To Rubbish</string>
-	
+	<string name="action_select_path">Select Path</string>
+    
     <string name="error_incorrect_email_or_password">Incorrect Email or Password</string>
 	<string name="error_account_already_exists">Account Already Exists</string>
 	

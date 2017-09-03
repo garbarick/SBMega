@@ -16,6 +16,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 {
     private MegaApiAndroid megaApi;
 	private boolean create;
+    private Params params;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -26,11 +27,15 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		App app = (App) getApplication();
 		megaApi = app.getMegaApi();
 
-		Account account = getIntent().getParcelableExtra(Constants.ACCOUNT);
-		if (account != null)
+		params = new Params(getIntent());
+        if (params.selectMode)
+        {
+            setResult(RESULT_CANCELED);
+        }
+        if (params.account != null)
 		{
 			AccountManager manager = AccountManager.get(this);
-			login(account.name, manager.getPassword(account));
+			login(params.account.name, manager.getPassword(params.account));
 		}
 		else
 		{
@@ -104,7 +109,11 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		{
 			Tools.show(this, R.id.login_form);
 		}
-		else
+		else if (params.selectMode)
+        {
+            finish();
+        }
+        else
 		{
 			Intent intent = new Intent(this, Accounts.class);
 			intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -122,11 +131,19 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	
 	public void onFetchNode()
 	{
-		Intent intent = new Intent(this, Browser.class);
-		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		intent.putExtra(Constants.ACCOUNT, getIntent().getParcelableExtra(Constants.ACCOUNT));
-		startActivity(intent);
-		finish();
+        if (params.selectMode)
+        {
+            Intent intent = new Intent(this, Browser.class);
+            params.setActionSelectPath(intent);
+            startActivityForResult(intent, 0);
+        }
+        else
+        {
+            Intent intent = new Intent(this, Browser.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
 	}
 
 	@Override
@@ -153,4 +170,29 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		setResult(RESULT_OK);
 		finish();
 	}
+    
+    @Override
+    public void onBackPressed()
+    {
+        if (!params.selectMode)
+        {
+            super.onBackPressed();
+        }
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (RESULT_OK == resultCode)
+        {
+            Params params = new Params(data);
+            if (params.selectMode)
+            {
+                Intent intent = new Intent(getIntent());
+                params.selectPath(intent, params.selectPath);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        }
+    }
 }

@@ -3,5 +3,8 @@
     <item
         android:id="@+id/add"
         android:title="@string/action_add"/>
-
+    <item
+        android:id="@+id/select_path"
+        android:title="@string/action_select_path"/>
+    
 </menu>

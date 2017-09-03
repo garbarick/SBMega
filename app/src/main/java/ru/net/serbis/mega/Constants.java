@@ -8,5 +8,10 @@ public interface Constants
 	String ACCOUNT = TYPE + ".ACCOUNT";
 	String SELECT_MODE = TYPE + ".SELECT_MODE";
 	String SELECT_PATH = TYPE + ".SELECT_PATH";
-	String PATH = TYPE + ".PATH";
+    String PATH = TYPE + ".PATH";
+    String ACTION = TYPE + ".ACTION";
+    
+    int ACTION_MOVE = 100;
+    int ACTION_SELECT_PATH = 101;
+    int ACTION_SELECT_ACCOUNT_PATH = 102;
 }
