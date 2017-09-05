@@ -24,5 +24,17 @@
 	
 	<string name="mess_are_you_sure">Are you sure?</string>
 	<string name="mess_delete_account">Delete Account</string>
+	<string name="mess_select_value">Select value</string>
+	<string name="mess_link">Link</string>
+	
+	<plurals name="num_files">
+        <item quantity="one">file</item>
+        <item quantity="other">files</item>
+    </plurals>
+
+    <plurals name="num_folders">
+        <item quantity="one">folder</item>
+        <item quantity="other">folders</item>
+    </plurals>
 	
 </resources>

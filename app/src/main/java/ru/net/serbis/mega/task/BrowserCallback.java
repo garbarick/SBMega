@@ -6,8 +6,6 @@ public interface BrowserCallback
 {
 	void onError(MegaError error);
 	
-	void onLogout();
-	
 	void onRequestStart();
 	
 	void onRequestFinish();

@@ -32,10 +32,6 @@ public class BrowserTask implements MegaRequestListenerInterface, MegaTransferLi
 		{
 			switch(request.getType())
 			{
-				case MegaRequest.TYPE_LOGOUT:
-					callback.onLogout();
-					break;
-					
 				case MegaRequest.TYPE_MOVE:
 					callback.onMoveFinish();
 					break;

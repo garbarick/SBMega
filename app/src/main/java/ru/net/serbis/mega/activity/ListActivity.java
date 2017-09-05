@@ -10,7 +10,6 @@ import ru.net.serbis.mega.data.*;
 
 public abstract class ListActivity<T> extends Activity implements AdapterView.OnItemClickListener, View.OnClickListener
 {
-	protected AccountManager manager;
 	protected ListView list;
 	protected ArrayAdapter<T> adapter;
     protected Params params;
@@ -21,7 +20,6 @@ public abstract class ListActivity<T> extends Activity implements AdapterView.On
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.list);
 
-		manager = AccountManager.get(this);
 		list = Tools.findView(this, R.id.list);
 		list.setOnItemClickListener(this);
 		

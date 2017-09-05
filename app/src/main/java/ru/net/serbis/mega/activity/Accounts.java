@@ -12,14 +12,16 @@ import ru.net.serbis.mega.service.*;
 
 public class Accounts extends ListActivity<Account> implements OnAccountsUpdateListener
 {
-	private Handler handler = new Handler();
+	protected AccountManager manager;
     private FilesConnection connection = new FilesConnection();
+	private String lastSelectedPath;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		
+		manager = AccountManager.get(this);
 		adapter = new AccountsAdapter(this);
 		list.setAdapter(adapter);
 		if (params.selectMode)
@@ -115,7 +117,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 	protected void onResume()
 	{
 		super.onResume();
-		manager.addOnAccountsUpdatedListener(this, handler, true);
+		manager.addOnAccountsUpdatedListener(this, null, true);
 	}
 
 	@Override
@@ -191,13 +193,14 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
                 {
                     case Constants.ACTION_SELECT_PATH:
                         Intent intent = new Intent(getIntent());
-                        String path = "//sbmega/" + params.account.name + params.selectPath;
+                        String path = "//" + Constants.SBMEGA + "/" + params.account.name + params.selectPath;
                         params.selectPath(intent, path);
                         setResult(RESULT_OK, intent);
                         finish();
                         break;
                         
                     case Constants.ACTION_SELECT_ACCOUNT_PATH:
+						lastSelectedPath = params.selectPath;
                         Toast.makeText(this, params.selectPath, Toast.LENGTH_LONG).show();
                         break;
                 }
@@ -209,29 +212,47 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
     {
         if (connection.isBound())
         {
-            Message msg = Message.obtain(null, Constants.ACTION_GET_FILES_LIST, 0, 0);
-            msg.replyTo = new Messenger(
-                new Handler()
-                {
-                    @Override
-                    public void handleMessage(Message msg)
-                    {
-                        Toast.makeText(Accounts.this, msg.getData().getString(Constants.FILES_LIST), Toast.LENGTH_LONG).show();
-                    }
-                }
-            );
-            try
-            {
-                connection.getService().send(msg);
-            }
-            catch (RemoteException e)
-            {
-                Log.info(this, e);
-            }
+			new InputDialog(
+				this,
+				R.string.mess_link,
+				lastSelectedPath,
+				new InputDialog.OnOk()
+				{
+					public void run(String text)
+					{
+						getFilesList(text);
+					}
+				});
         }
         else
         {
             Toast.makeText(this, "no connection...", Toast.LENGTH_LONG).show();    
         }
     }
+	
+	private void getFilesList(String path)
+	{
+		Message msg = Message.obtain(null, Constants.ACTION_GET_FILES_LIST, 0, 0);
+		Bundle data = new Bundle();
+		data.putString(Constants.PATH, path);
+		msg.setData(data);
+		msg.replyTo = new Messenger(
+			new Handler()
+			{
+				@Override
+				public void handleMessage(Message msg)
+				{
+					Toast.makeText(Accounts.this, msg.getData().getString(Constants.FILES_LIST), Toast.LENGTH_LONG).show();
+				}
+			}
+		);
+		try
+		{
+			connection.getService().send(msg);
+		}
+		catch (RemoteException e)
+		{
+			Log.info(this, e);
+		}
+	}
 }

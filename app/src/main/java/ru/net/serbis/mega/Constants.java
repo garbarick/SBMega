@@ -11,6 +11,7 @@ public interface Constants
     String PATH = TYPE + ".PATH";
     String ACTION = TYPE + ".ACTION";
     String FILES_LIST = TYPE + ".FILES_LIST";
+	String SBMEGA = "sbmega";
     
     int ACTION_MOVE = 100;
     int ACTION_SELECT_PATH = 101;

@@ -12,7 +12,7 @@ import ru.net.serbis.mega.account.*;
 import ru.net.serbis.mega.data.*;
 import ru.net.serbis.mega.task.*;
 
-public class Login extends AccountAuthenticatorActivity implements LoginCallback
+public class Login extends AccountAuthenticatorActivity implements LoginCallback, FetchCallback, LogoutCallback
 {
     private MegaApiAndroid megaApi;
 	private boolean create;
@@ -84,11 +84,11 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	{
 		if (create)
 		{
-			megaApi.logout(listener);
+			new LogoutTask(megaApi, this).execute();
 		}
 		else
 		{
-			megaApi.fetchNodes(listener);
+			new FetchTask(megaApi, this).execute();
 		}
 	}
 
@@ -129,7 +129,8 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		bar.setProgress(persent);
 	}
 	
-	public void onFetchNode()
+	@Override
+	public void onFetched(MegaRequestListenerInterface listener)
 	{
         if (params.selectMode)
         {
@@ -147,7 +148,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	}
 
 	@Override
-	public void onLogout(Token token)
+	public void onLogout()
 	{
 		String email = Tools.getEditText(this, R.id.login_email);
 		String password = Tools.getEditText(this, R.id.login_password);

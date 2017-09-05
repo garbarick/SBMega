@@ -31,8 +31,13 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
     @Override
     public Token doInBackground(String... params)
     {
-		email = params[0];
-        String privateKey = megaApi.getBase64PwKey(params[1]);
+		return getToken(params[0], params[1]);
+    }
+	
+	public Token getToken(String email, String password)
+    {
+		this.email = email;
+        String privateKey = megaApi.getBase64PwKey(password);
         String publicKey = megaApi.getStringHash(privateKey, email);
         return new Token(publicKey, privateKey);
     }
@@ -40,9 +45,14 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
     @Override
     protected void onPostExecute(Token token)
     {
-        this.token = token;
-		megaApi.fastLogin(email, token.getPublicKey(), token.getPrivateKey(), this);
+        login(token);
     }
+	
+	public void login(Token token)
+	{
+		this.token = token;
+		megaApi.fastLogin(email, token.getPublicKey(), token.getPrivateKey(), this);
+	}
 	
 	public void onRequestStart(MegaApiJava api, MegaRequest request)
     {
@@ -50,12 +60,6 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
 
     public void onRequestUpdate(MegaApiJava api, MegaRequest request)
     {
-        switch (request.getType())
-        {
-            case MegaRequest.TYPE_FETCH_NODES:
-				callback.progress(Tools.getProgress(request));
-				break;
-        }
     }
 
     public void onRequestFinish(MegaApiJava api, MegaRequest request, MegaError error)
@@ -67,14 +71,6 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
             	case MegaRequest.TYPE_LOGIN:
 					callback.onLogin(token, this);
             		break;
-
-            	case MegaRequest.TYPE_FETCH_NODES:
-				    callback.onFetchNode();
-            		break;
-			
-				case MegaRequest.TYPE_LOGOUT:
-					callback.onLogout(token);
-					break;
 			}
         }
 		else

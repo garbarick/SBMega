@@ -10,7 +10,7 @@ import ru.net.serbis.mega.adapter.*;
 import ru.net.serbis.mega.task.*;
 import ru.net.serbis.mega.data.*;
 
-public class Browser extends ListActivity<MegaNode> implements BrowserCallback
+public class Browser extends ListActivity<MegaNode> implements BrowserCallback, LogoutCallback
 {
 	private App app;
 	private MegaApiAndroid megaApi;
@@ -26,7 +26,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 		megaApi = app.getMegaApi();
 		task = new BrowserTask(megaApi, this);
 
-		adapter = new NodesAdapter(this);
+		adapter = new NodesAdapter(this, megaApi);
 		list.setAdapter(adapter);
 		initList();
 	}
@@ -61,7 +61,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
         switch (id)
         {
 			case R.id.logout:
-				megaApi.logout(task);
+				new LogoutTask(megaApi, this).execute();
 				return true;
 
 			case R.id.go_to_rubbish:
@@ -147,7 +147,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
 				}
 				else
 				{
-					megaApi.logout(task);
+					new LogoutTask(megaApi, this).execute();
 				}
 				break;
 
@@ -253,7 +253,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback
                         
                     case Constants.ACTION_SELECT_PATH:
                         this.params.selectPath = params.selectPath;
-                        megaApi.logout(task);
+                        new LogoutTask(megaApi, this).execute();
                 }
 			}
         }

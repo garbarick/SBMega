@@ -3,9 +3,9 @@ package ru.net.serbis.mega.task;
 import nz.mega.sdk.*;
 import ru.net.serbis.mega.data.*;
 
-public interface LoginCallback
+public interface LogoutCallback
 {
-	void onLogin(Token token, MegaRequestListenerInterface listener);
-	
 	void onError(MegaError error);
+
+	void onLogout();
 }

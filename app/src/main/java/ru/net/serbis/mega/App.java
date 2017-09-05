@@ -14,7 +14,7 @@ public class App extends Application
 	{
         public void log(String time, int loglevel, String source, String message)
 		{
-            Log.info(this, source + ": " + message); 
+            //Log.info(this, source + ": " + message); 
         }
     }
     

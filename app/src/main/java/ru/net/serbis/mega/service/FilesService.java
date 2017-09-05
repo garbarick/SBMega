@@ -3,7 +3,6 @@ package ru.net.serbis.mega.service;
 import android.app.*;
 import android.content.*;
 import android.os.*;
-import java.util.*;
 import ru.net.serbis.mega.*;
 
 public class FilesService extends Service
@@ -16,7 +15,7 @@ public class FilesService extends Service
             switch(msg.what)
             {
                 case Constants.ACTION_GET_FILES_LIST:
-                    getFlesList(msg.replyTo);
+                    getFlesList(msg);
                     break;
                     
                 default:
@@ -42,19 +41,9 @@ public class FilesService extends Service
         return messenger.getBinder();
     }
     
-    public void getFlesList(Messenger messenger)
+    public void getFlesList(Message msg)
     {
-        Message msg = Message.obtain();
-        Bundle data = new Bundle();
-        data.putString(Constants.FILES_LIST, "Test-" + new Random().nextInt());
-        msg.setData(data);
-        try
-        {
-            messenger.send(msg);
-        }
-        catch (RemoteException e)
-        {
-            Log.info(this, e);
-        }
+		FilesList filesList = new FilesList(app, msg);
+		filesList.execute();
     }
 }

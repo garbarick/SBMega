@@ -11,6 +11,7 @@ import ru.net.serbis.mega.*;
 public class NodesAdapter extends ArrayAdapter<MegaNode>
 {
 	private static int layoutId = R.layout.node;
+	private MegaApiAndroid megaApi;
 
 	private class Holder
 	{
@@ -19,9 +20,10 @@ public class NodesAdapter extends ArrayAdapter<MegaNode>
 		private TextView fileSize;
 	}
 
-	public NodesAdapter(Context context)
+	public NodesAdapter(Context context, MegaApiAndroid megaApi)
 	{
 		super(context, layoutId);
+		this.megaApi = megaApi;
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class NodesAdapter extends ArrayAdapter<MegaNode>
 		else
 		{
 			holder.thumbnail.setImageResource(R.drawable.folder);
-			holder.fileSize.setText("");
+			holder.fileSize.setText(getInfoFolder(node));
 		}
 		return view;
 	}
@@ -91,5 +93,35 @@ public class NodesAdapter extends ArrayAdapter<MegaNode>
 		}
 
 		return result;
+	}
+
+	private String getInfoFolder(MegaNode node)
+	{
+		int numFolders = megaApi.getNumChildFolders(node);
+		int numFiles = megaApi.getNumChildFiles(node);;
+
+		StringBuffer info = new StringBuffer();
+		if (numFolders > 0)
+		{
+			info.append(numFolders)
+				.append(" ")
+				.append(
+					getContext().getResources().getQuantityString(
+						R.plurals.num_folders, numFolders));
+		}
+		if (numFolders > 0 && numFiles > 0)
+		{
+			info.append(", ");
+		}
+		if (numFiles > 0)
+		{
+			info.append(numFiles)
+				.append(" ")
+				.append(
+					getContext().getResources().getQuantityString(
+						R.plurals.num_files, numFiles));
+		}
+
+		return info.toString();
 	}
 }
