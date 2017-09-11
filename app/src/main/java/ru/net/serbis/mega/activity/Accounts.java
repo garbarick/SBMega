@@ -100,6 +100,10 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 				getFile();
 				return true;
 			
+			case R.id.remove_file:
+				removeFile();
+				return true;
+				
 			case R.id.delete:
 				new SureDialog(
 					this,
@@ -276,5 +280,14 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 			Constants.PATH,
 			null,
 			Constants.FILE);
+    }
+	
+	private void removeFile()
+    {
+        runServiceAction(
+			Constants.ACTION_REMOVE_FILE,
+			Constants.PATH,
+			null,
+			Constants.RESULT);
     }
 }

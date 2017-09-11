@@ -86,11 +86,11 @@ public class Action implements LoginCallback, FetchCallback, LogoutCallback, Bro
 	{
 	}
 
-	protected void sendResult(String key, String value)
+	protected void sendResult(String key, Object value)
 	{
         Message msg = Message.obtain();
         Bundle data = new Bundle();
-        data.putString(key, value);
+        data.putString(key, String.valueOf(value));
         msg.setData(data);
         try
         {

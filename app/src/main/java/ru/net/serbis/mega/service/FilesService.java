@@ -22,6 +22,10 @@ public class FilesService extends Service
 				case Constants.ACTION_GET_FILE:
                     new GetFile(app, msg).execute();
                     break;
+					
+				case Constants.ACTION_REMOVE_FILE:
+                    new RemoveFile(app, msg).execute();
+                    break;
                     
                 default:
                     super.handleMessage(msg);
