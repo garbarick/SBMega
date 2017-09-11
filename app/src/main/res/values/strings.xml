@@ -18,6 +18,7 @@
 	<string name="action_move_to_rubbish">Move To Rubbish</string>
 	<string name="action_select_path">Select Path</string>
     <string name="action_get_files_list">Get Files List</string>
+	<string name="action_get_file">Get File</string>
     
     <string name="error_incorrect_email_or_password">Incorrect Email or Password</string>
 	<string name="error_account_already_exists">Account Already Exists</string>

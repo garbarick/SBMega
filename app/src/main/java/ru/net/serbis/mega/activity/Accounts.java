@@ -95,6 +95,10 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
             case R.id.get_files_list:
                 getFilesList();
                 return true;
+				
+			case R.id.get_file:
+				getFile();
+				return true;
 			
 			case R.id.delete:
 				new SureDialog(
@@ -207,20 +211,20 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
             }
         }
     }
-    
-    private void getFilesList()
+	
+	private void runServiceAction(final int action, final String requestKey, String requestValue, final String responseKey)
     {
         if (connection.isBound())
         {
 			new InputDialog(
 				this,
 				R.string.mess_link,
-				lastSelectedPath,
+				requestValue,
 				new InputDialog.OnOk()
 				{
 					public void run(String text)
 					{
-						getFilesList(text);
+						sendServiceAction(action, requestKey, text, responseKey);
 					}
 				});
         }
@@ -229,12 +233,12 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
             Toast.makeText(this, "no connection...", Toast.LENGTH_LONG).show();    
         }
     }
-	
-	private void getFilesList(String path)
+
+	private void sendServiceAction(int action, String requestKey, String requestValue, final String responseKey)
 	{
-		Message msg = Message.obtain(null, Constants.ACTION_GET_FILES_LIST, 0, 0);
+		Message msg = Message.obtain(null, action, 0, 0);
 		Bundle data = new Bundle();
-		data.putString(Constants.PATH, path);
+		data.putString(requestKey, requestValue);
 		msg.setData(data);
 		msg.replyTo = new Messenger(
 			new Handler()
@@ -242,7 +246,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 				@Override
 				public void handleMessage(Message msg)
 				{
-					Toast.makeText(Accounts.this, msg.getData().getString(Constants.FILES_LIST), Toast.LENGTH_LONG).show();
+					Toast.makeText(Accounts.this, msg.getData().getString(responseKey), Toast.LENGTH_LONG).show();
 				}
 			}
 		);
@@ -255,4 +259,22 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 			Log.info(this, e);
 		}
 	}
+    
+    private void getFilesList()
+    {
+		runServiceAction(
+			Constants.ACTION_GET_FILES_LIST,
+			Constants.PATH,
+			lastSelectedPath,
+			Constants.FILES_LIST);
+    }
+	
+	private void getFile()
+    {
+        runServiceAction(
+			Constants.ACTION_GET_FILE,
+			Constants.PATH,
+			null,
+			Constants.FILE);
+    }
 }

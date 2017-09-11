@@ -1,5 +1,7 @@
 package ru.net.serbis.mega;
 
+import java.util.regex.*;
+
 public interface Constants
 {
 	String TYPE = "ru.net.serbis.mega";
@@ -11,10 +13,16 @@ public interface Constants
     String PATH = TYPE + ".PATH";
     String ACTION = TYPE + ".ACTION";
     String FILES_LIST = TYPE + ".FILES_LIST";
+	String FILE = TYPE + ".FILE";
+	String ERROR = TYPE + ".ERROR";
+	
 	String SBMEGA = "sbmega";
     
     int ACTION_MOVE = 100;
     int ACTION_SELECT_PATH = 101;
     int ACTION_SELECT_ACCOUNT_PATH = 102;
     int ACTION_GET_FILES_LIST = 103;
+	int ACTION_GET_FILE = 104;
+	
+	Pattern PATH_PATTERN = Pattern.compile("^\\/\\/" + SBMEGA + "\\/(.*?)(\\/.*)$");
 }

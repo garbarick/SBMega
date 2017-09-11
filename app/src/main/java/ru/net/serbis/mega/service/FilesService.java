@@ -4,6 +4,7 @@ import android.app.*;
 import android.content.*;
 import android.os.*;
 import ru.net.serbis.mega.*;
+import ru.net.serbis.mega.service.action.*;
 
 public class FilesService extends Service
 {
@@ -15,7 +16,11 @@ public class FilesService extends Service
             switch(msg.what)
             {
                 case Constants.ACTION_GET_FILES_LIST:
-                    getFlesList(msg);
+                    new GetFilesList(app, msg).execute();
+                    break;
+					
+				case Constants.ACTION_GET_FILE:
+                    new GetFile(app, msg).execute();
                     break;
                     
                 default:
@@ -39,11 +44,5 @@ public class FilesService extends Service
     public IBinder onBind(Intent intent)
     {
         return messenger.getBinder();
-    }
-    
-    public void getFlesList(Message msg)
-    {
-		FilesList filesList = new FilesList(app, msg);
-		filesList.execute();
     }
 }
