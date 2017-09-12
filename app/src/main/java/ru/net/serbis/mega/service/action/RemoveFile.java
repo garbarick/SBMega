@@ -7,15 +7,13 @@ import ru.net.serbis.mega.task.*;
 
 public class RemoveFile extends Action
 {
-	private String result;
-	
 	public RemoveFile(App app, Message msg)
 	{
 		super(app, msg);
 	}
 	
 	@Override
-	public void onFetched(MegaRequestListenerInterface listener)
+	public void onFetched()
 	{
 		MegaNode node = megaApi.getNodeByPath(path);
 		megaApi.moveNode(
@@ -23,17 +21,10 @@ public class RemoveFile extends Action
 			megaApi.getRubbishNode(),
 			new BrowserTask(megaApi, this));
 	}
-	
-	@Override
-	public void onLogout()
-	{
-		sendResult(Constants.RESULT, result);
-	}
 
 	@Override
 	public void onMoveFinish()
 	{
-		result = Constants.SUCCESS;
-		logout();
+		sendResult(Constants.RESULT, Constants.SUCCESS);
 	}
 }

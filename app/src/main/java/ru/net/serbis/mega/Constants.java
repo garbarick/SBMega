@@ -26,6 +26,7 @@ public interface Constants
     int ACTION_GET_FILES_LIST = 103;
 	int ACTION_GET_FILE = 104;
 	int ACTION_REMOVE_FILE = 105;
+	int ACTION_PING = 106;
 	
 	Pattern PATH_PATTERN = Pattern.compile("^\\/\\/" + SBMEGA + "\\/(.*?)(\\/.*)$");
 }

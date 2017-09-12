@@ -27,6 +27,10 @@ public class FilesService extends Service
                     new RemoveFile(app, msg).execute();
                     break;
                     
+				case Constants.ACTION_PING:
+                    new Ping(app, msg).execute();
+                    break;
+					
                 default:
                     super.handleMessage(msg);
             }

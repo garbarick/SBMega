@@ -8,10 +8,10 @@ import java.util.regex.*;
 import nz.mega.sdk.*;
 import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.account.*;
-import ru.net.serbis.mega.data.*;
 import ru.net.serbis.mega.task.*;
+import android.text.*;
 
-public class Action implements LoginCallback, FetchCallback, LogoutCallback, BrowserCallback
+public class Action implements LoginCallback, FetchCallback, BrowserCallback
 {
 	protected App app;
 	protected MegaApiAndroid megaApi;
@@ -23,7 +23,6 @@ public class Action implements LoginCallback, FetchCallback, LogoutCallback, Bro
 	public Action(App app, Message msg)
 	{
 		this.app = app;
-		this.megaApi = app.getMegaApi();
 		this.messenger = msg.replyTo;
 		this.context = app.getApplicationContext();
 		initEmailPath(msg);
@@ -31,11 +30,15 @@ public class Action implements LoginCallback, FetchCallback, LogoutCallback, Bro
 	
 	protected void initEmailPath(Message msg)
 	{
-		Matcher matcher = Constants.PATH_PATTERN.matcher(getPath(msg));
-		if (matcher.matches())
+		String emailPath = getPath(msg);
+		if (!TextUtils.isEmpty(emailPath))
 		{
-			email = matcher.group(1);
-			path = matcher.group(2);
+			Matcher matcher = Constants.PATH_PATTERN.matcher(emailPath);
+			if (matcher.matches())
+			{
+				email = matcher.group(1);
+				path = matcher.group(2);
+			}
 		}
 	}
 
@@ -47,13 +50,23 @@ public class Action implements LoginCallback, FetchCallback, LogoutCallback, Bro
 	public void execute()
 	{
 		AccountManager manager = AccountManager.get(context);
-		String password = manager.getPassword(new AccountMega(email));
-		new LoginTask(megaApi, this).execute(email, password);
+		megaApi = app.getMegaApi(email);
+		if (megaApi != null)
+		{
+			onFetched();
+		}
+		else
+		{
+			megaApi = app.getMegaApi();
+			String password = manager.getPassword(new AccountMega(email));
+			new LoginTask(megaApi, this).execute(email, password);
+		}
 	}
 	
 	@Override
-	public void onLogin(Token token, MegaRequestListenerInterface listener)
+	public void onLogin(String user)
 	{
+		app.addUserSession(user, megaApi);
 		new FetchTask(megaApi, this).execute();
 	}
 
@@ -71,18 +84,7 @@ public class Action implements LoginCallback, FetchCallback, LogoutCallback, Bro
 	}	
 	
 	@Override
-	public void onFetched(MegaRequestListenerInterface listener)
-	{
-		logout();
-	}
-	
-	protected void logout()
-	{
-		new LogoutTask(megaApi, this).execute();
-	}
-	
-	@Override
-	public void onLogout()
+	public void onFetched()
 	{
 	}
 

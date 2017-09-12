@@ -15,10 +15,10 @@ public class GetFilesList extends Action
 	}
 
 	@Override
-	public void onFetched(MegaRequestListenerInterface listener)
+	public void onFetched()
 	{
 		generateFilesList();
-		logout();
+		sendResult(Constants.FILES_LIST, fileslist);
 	}
 
 	private void generateFilesList()
@@ -59,11 +59,5 @@ public class GetFilesList extends Action
 				writer.newLine();
 			}
 		}
-	}
-
-	@Override
-	public void onLogout()
-	{
-		sendResult(Constants.FILES_LIST, fileslist);
 	}
 }

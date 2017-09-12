@@ -69,7 +69,7 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
         	switch (request.getType())
         	{
             	case MegaRequest.TYPE_LOGIN:
-					callback.onLogin(token, this);
+					callback.onLogin(email);
             		break;
 			}
         }

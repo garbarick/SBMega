@@ -1,6 +1,7 @@
 package ru.net.serbis.mega;
 
 import android.app.*;
+import java.util.*;
 import nz.mega.sdk.*;
 
 public class App extends Application
@@ -9,6 +10,7 @@ public class App extends Application
 	private static final String USER_AGENT = "SB MEGA";
 	
 	private MegaApiAndroid megaApi;
+	private Map<String, MegaApiAndroid> users = new HashMap<String, MegaApiAndroid>();
 	
     public class AndroidLogger implements MegaLoggerInterface
 	{
@@ -34,5 +36,27 @@ public class App extends Application
 			megaApi = new MegaApiAndroid(App.APP_KEY, App.USER_AGENT, getFilesDir().getParentFile() + "/");
 		}
 		return megaApi;
+	}
+	
+	public MegaApiAndroid getMegaApi(String user)
+	{
+		if (users.containsKey(user))
+		{
+			return users.get(user);
+		}
+		return null;
+	}
+	
+	public void addUserSession(String user, MegaApiAndroid megaApi)
+	{
+		this.megaApi = null;
+		Log.info(this, "add user session for " + user);
+		users.put(user, megaApi);
+	}
+	
+	public void clearUserSession(String user)
+	{
+		Log.info(this, "clear user session for " + user);
+		users.remove(user);
 	}
 }

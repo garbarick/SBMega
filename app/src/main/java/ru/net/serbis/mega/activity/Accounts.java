@@ -9,6 +9,7 @@ import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.adapter.*;
 import ru.net.serbis.mega.data.*;
 import ru.net.serbis.mega.service.*;
+import android.text.*;
 
 public class Accounts extends ListActivity<Account> implements OnAccountsUpdateListener
 {
@@ -102,6 +103,10 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 			
 			case R.id.remove_file:
 				removeFile();
+				return true;
+				
+			case R.id.ping:
+				ping();
 				return true;
 				
 			case R.id.delete:
@@ -216,21 +221,28 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
         }
     }
 	
-	private void runServiceAction(final int action, final String requestKey, String requestValue, final String responseKey)
+	private void runServiceAction(final int action, boolean input, final String requestKey, String requestValue, final String responseKey)
     {
         if (connection.isBound())
         {
-			new InputDialog(
-				this,
-				R.string.mess_link,
-				requestValue,
-				new InputDialog.OnOk()
-				{
-					public void run(String text)
+			if (input)
+			{
+				new InputDialog(
+					this,
+					R.string.mess_link,
+					requestValue,
+					new InputDialog.OnOk()
 					{
-						sendServiceAction(action, requestKey, text, responseKey);
-					}
-				});
+						public void run(String text)
+						{
+							sendServiceAction(action, requestKey, text, responseKey);
+						}
+					});
+			}
+			else
+			{
+				sendServiceAction(action, requestKey, requestValue, responseKey);
+			}
         }
         else
         {
@@ -242,7 +254,10 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 	{
 		Message msg = Message.obtain(null, action, 0, 0);
 		Bundle data = new Bundle();
-		data.putString(requestKey, requestValue);
+		if (!TextUtils.isEmpty(requestKey))
+		{
+			data.putString(requestKey, requestValue);
+		}
 		msg.setData(data);
 		msg.replyTo = new Messenger(
 			new Handler()
@@ -268,6 +283,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
     {
 		runServiceAction(
 			Constants.ACTION_GET_FILES_LIST,
+			true,
 			Constants.PATH,
 			lastSelectedPath,
 			Constants.FILES_LIST);
@@ -277,6 +293,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
     {
         runServiceAction(
 			Constants.ACTION_GET_FILE,
+			true,
 			Constants.PATH,
 			null,
 			Constants.FILE);
@@ -286,7 +303,18 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
     {
         runServiceAction(
 			Constants.ACTION_REMOVE_FILE,
+			true,
 			Constants.PATH,
+			null,
+			Constants.RESULT);
+    }
+	
+	private void ping()
+    {
+        runServiceAction(
+			Constants.ACTION_PING,
+			false,
+			null,
 			null,
 			Constants.RESULT);
     }

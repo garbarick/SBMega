@@ -8,5 +8,5 @@ public interface FetchCallback
 
 	void onError(MegaError error);
 	
-	void onFetched(MegaRequestListenerInterface listener);
+	void onFetched();
 }

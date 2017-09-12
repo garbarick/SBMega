@@ -16,6 +16,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 	private MegaApiAndroid megaApi;
 	private MegaNode node;
 	private BrowserTask task;
+	private boolean clearUser;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -23,7 +24,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 		super.onCreate(savedInstanceState);
 
 		app = (App) getApplication();
-		megaApi = app.getMegaApi();
+		megaApi = app.getMegaApi(params.account.name);
 		task = new BrowserTask(megaApi, this);
 
 		adapter = new NodesAdapter(this, megaApi);
@@ -61,6 +62,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
         switch (id)
         {
 			case R.id.logout:
+				clearUser = true;
 				new LogoutTask(megaApi, this).execute();
 				return true;
 
@@ -147,7 +149,8 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 				}
 				else
 				{
-					new LogoutTask(megaApi, this).execute();
+					clearUser = false;
+					onLogout();
 				}
 				break;
 
@@ -177,6 +180,10 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
         }
         else
         {
+			if (clearUser)
+			{
+				app.clearUserSession(params.account.name);
+			}
             Intent intent = new Intent(this, Accounts.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
@@ -233,6 +240,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 				}
 				break;
 		}
+		super.onClick(view);
 	}
 
 	@Override

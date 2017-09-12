@@ -42,7 +42,7 @@ public class FetchTask extends AsyncTask<Void, Void, Void> implements MegaReques
         	switch (request.getType())
         	{
             	case MegaRequest.TYPE_FETCH_NODES:
-				    callback.onFetched(this);
+				    callback.onFetched();
             		break;
 			}
         }

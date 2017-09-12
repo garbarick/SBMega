@@ -5,7 +5,7 @@ import ru.net.serbis.mega.data.*;
 
 public interface LoginCallback
 {
-	void onLogin(Token token, MegaRequestListenerInterface listener);
+	void onLogin(String user);
 	
 	void onError(MegaError error);
 }

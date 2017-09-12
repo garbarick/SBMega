@@ -14,6 +14,7 @@ import ru.net.serbis.mega.task.*;
 
 public class Login extends AccountAuthenticatorActivity implements LoginCallback, FetchCallback, LogoutCallback
 {
+	private App app;
     private MegaApiAndroid megaApi;
 	private boolean create;
     private Params params;
@@ -24,8 +25,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
 		
-		App app = (App) getApplication();
-		megaApi = app.getMegaApi();
+		app = (App) getApplication();
 
 		params = new Params(getIntent());
         if (params.selectMode)
@@ -76,11 +76,20 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	private void login(String email, String password)
 	{
 		Tools.hide(this, R.id.login_form);
-        new LoginTask(megaApi, this).execute(email, password);
+		megaApi = app.getMegaApi(email);
+		if (megaApi != null)
+		{
+			onFetched();
+		}
+		else
+		{
+			megaApi = app.getMegaApi();
+        	new LoginTask(megaApi, this).execute(email, password);
+		}
 	}
 
 	@Override
-	public void onLogin(Token token, MegaRequestListenerInterface listener)
+	public void onLogin(String user)
 	{
 		if (create)
 		{
@@ -88,6 +97,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		}
 		else
 		{
+			app.addUserSession(user, megaApi);
 			new FetchTask(megaApi, this).execute();
 		}
 	}
@@ -130,18 +140,20 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	}
 	
 	@Override
-	public void onFetched(MegaRequestListenerInterface listener)
+	public void onFetched()
 	{
         if (params.selectMode)
         {
             Intent intent = new Intent(this, Browser.class);
             params.setActionSelectPath(intent);
+			params.setAccount(intent, params.account);
             startActivityForResult(intent, 0);
         }
         else
         {
             Intent intent = new Intent(this, Browser.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			params.setAccount(intent, params.account);
             startActivity(intent);
             finish();
         }
@@ -151,6 +163,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	public void onLogout()
 	{
 		String email = Tools.getEditText(this, R.id.login_email);
+		app.clearUserSession(email);
 		String password = Tools.getEditText(this, R.id.login_password);
 
 		AccountManager manager = AccountManager.get(this);
@@ -184,16 +197,16 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
-        if (RESULT_OK == resultCode)
-        {
-            Params params = new Params(data);
-            if (params.selectMode)
-            {
+		Params params = new Params(data);
+		if (params.selectMode)
+		{
+        	if (RESULT_OK == resultCode)
+			{
                 Intent intent = new Intent(getIntent());
                 params.selectPath(intent, params.selectPath);
                 setResult(RESULT_OK, intent);
-                finish();
             }
+			finish();
         }
     }
 }

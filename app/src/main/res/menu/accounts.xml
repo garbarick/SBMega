@@ -15,5 +15,8 @@
     <item
         android:id="@+id/remove_file"
         android:title="@string/action_remove_file"/>
+	<item
+        android:id="@+id/ping"
+        android:title="@string/action_ping"/>
 	
 </menu>
