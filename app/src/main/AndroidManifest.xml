@@ -47,7 +47,9 @@
 		</service>
         
         <service
-            android:name=".service.FilesService"/>
+            android:name=".service.FilesService"
+			android:exported="true"
+			android:process=":remote"/>
 		
     </application>
 
