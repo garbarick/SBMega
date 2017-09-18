@@ -2,6 +2,7 @@ package ru.net.serbis.mega.activity;
 
 import android.accounts.*;
 import android.content.*;
+import android.net.*;
 import android.os.*;
 import android.view.*;
 import android.view.inputmethod.*;
@@ -24,7 +25,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login);
-		
+
 		app = (App) getApplication();
 
 		params = new Params(getIntent());
@@ -32,6 +33,10 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
         {
             setResult(RESULT_CANCELED);
         }
+		if (!isNetworkAvailable())
+		{
+			onError(null);
+		}
         if (params.account != null)
 		{
 			AccountManager manager = AccountManager.get(this);
@@ -105,15 +110,18 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	@Override
 	public void onError(MegaError error)
 	{
-		String errorMessage = error.getErrorString();
-		switch (error.getErrorCode())
+		if (error != null)
 		{
-			case MegaError.API_ENOENT:
-			case MegaError.API_EARGS:
-				errorMessage = getString(R.string.error_incorrect_email_or_password);
-				break;
+			String errorMessage = error.getErrorString();
+			switch (error.getErrorCode())
+			{
+				case MegaError.API_ENOENT:
+				case MegaError.API_EARGS:
+					errorMessage = getString(R.string.error_incorrect_email_or_password);
+					break;
+			}
+			Toast.makeText(this, error.getErrorCode() + ": " + errorMessage, Toast.LENGTH_LONG).show();
 		}
-		Toast.makeText(this, error.getErrorCode() + ": " + errorMessage, Toast.LENGTH_LONG).show();
 
 		if (create)
 		{
@@ -138,7 +146,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		ProgressBar bar = Tools.findView(this, R.id.login_progress);
 		bar.setProgress(persent);
 	}
-	
+
 	@Override
 	public void onFetched()
 	{
@@ -184,7 +192,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 		setResult(RESULT_OK);
 		finish();
 	}
-    
+
     @Override
     public void onBackPressed()
     {
@@ -193,7 +201,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
             super.onBackPressed();
         }
     }
-    
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
@@ -209,4 +217,11 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 			finish();
         }
     }
+	
+	private boolean isNetworkAvailable()
+	{
+		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+	}
 }

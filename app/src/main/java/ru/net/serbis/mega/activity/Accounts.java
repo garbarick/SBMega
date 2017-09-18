@@ -3,13 +3,13 @@ package ru.net.serbis.mega.activity;
 import android.accounts.*;
 import android.content.*;
 import android.os.*;
+import android.text.*;
 import android.view.*;
 import android.widget.*;
 import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.adapter.*;
 import ru.net.serbis.mega.data.*;
 import ru.net.serbis.mega.service.*;
-import android.text.*;
 
 public class Accounts extends ListActivity<Account> implements OnAccountsUpdateListener
 {

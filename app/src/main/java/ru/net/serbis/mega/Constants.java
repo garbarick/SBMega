@@ -4,7 +4,7 @@ import java.util.regex.*;
 
 public interface Constants
 {
-	String TYPE = "ru.net.serbis.mega";
+	String TYPE = Constants.class.getPackage().getName();
 	String TOKEN = TYPE + ".TOKEN";
 	String TOKEN_TYPE = TYPE + ".TOKEN_TYPE";
     String ACCOUNT = TYPE + ".ACCOUNT";
