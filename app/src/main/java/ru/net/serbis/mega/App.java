@@ -33,7 +33,7 @@ public class App extends Application
 	{
 		if(megaApi == null)
 		{
-			megaApi = new MegaApiAndroid(App.APP_KEY, App.USER_AGENT, getFilesDir().getParentFile() + "/");
+			megaApi = new MegaApiAndroid(App.APP_KEY, App.USER_AGENT, getFilesDir() + "/");
 		}
 		return megaApi;
 	}
