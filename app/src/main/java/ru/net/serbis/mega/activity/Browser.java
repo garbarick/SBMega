@@ -24,7 +24,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 		super.onCreate(savedInstanceState);
 
 		app = (App) getApplication();
-		megaApi = app.getMegaApi(params.account.name);
+		megaApi = app.getUserMegaApi(params.account.name);
 		task = new BrowserTask(megaApi, this);
 
 		adapter = new NodesAdapter(this, megaApi);

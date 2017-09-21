@@ -50,14 +50,14 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 	public void execute()
 	{
 		AccountManager manager = AccountManager.get(context);
-		megaApi = app.getMegaApi(email);
+		megaApi = app.getUserMegaApi(email);
 		if (megaApi != null)
 		{
 			onFetched();
 		}
 		else
 		{
-			megaApi = app.getMegaApi();
+			megaApi = app.getMegaApi(email);
 			String password = manager.getPassword(new AccountMega(email));
 			new LoginTask(megaApi, this).execute(email, password);
 		}

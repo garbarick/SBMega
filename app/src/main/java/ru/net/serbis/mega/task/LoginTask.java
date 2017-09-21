@@ -17,11 +17,6 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
         this.megaApi = megaApi;
     }
 	
-	public LoginTask(App app)
-	{
-		this(app.getMegaApi());
-	}
-	
     public LoginTask(MegaApiAndroid megaApi, LoginCallback callback)
     {
         this(megaApi);

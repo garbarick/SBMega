@@ -81,14 +81,14 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	private void login(String email, String password)
 	{
 		Tools.hide(this, R.id.login_form);
-		megaApi = app.getMegaApi(email);
+		megaApi = app.getUserMegaApi(email);
 		if (megaApi != null)
 		{
 			onFetched();
 		}
 		else
 		{
-			megaApi = app.getMegaApi();
+			megaApi = app.getMegaApi(email);
         	new LoginTask(megaApi, this).execute(email, password);
 		}
 	}

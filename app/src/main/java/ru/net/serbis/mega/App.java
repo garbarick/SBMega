@@ -1,6 +1,7 @@
 package ru.net.serbis.mega;
 
 import android.app.*;
+import java.io.*;
 import java.util.*;
 import nz.mega.sdk.*;
 
@@ -29,16 +30,18 @@ public class App extends Application
 		MegaApiAndroid.setLogLevel(MegaApiAndroid.LOG_LEVEL_MAX);
 	}
 	
-	public MegaApiAndroid getMegaApi()
+	public MegaApiAndroid getMegaApi(String user)
 	{
 		if(megaApi == null)
 		{
-			megaApi = new MegaApiAndroid(App.APP_KEY, App.USER_AGENT, getFilesDir() + "/");
+            File userDir = new File (getCacheDir(), user);
+            Utils.clearOrCreateDir(userDir);
+			megaApi = new MegaApiAndroid(App.APP_KEY, App.USER_AGENT, userDir + "/");
 		}
 		return megaApi;
 	}
 	
-	public MegaApiAndroid getMegaApi(String user)
+	public MegaApiAndroid getUserMegaApi(String user)
 	{
 		if (users.containsKey(user))
 		{
