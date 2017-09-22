@@ -2,7 +2,6 @@ package ru.net.serbis.mega.activity;
 
 import android.accounts.*;
 import android.content.*;
-import android.net.*;
 import android.os.*;
 import android.view.*;
 import android.view.inputmethod.*;
@@ -33,7 +32,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
         {
             setResult(RESULT_CANCELED);
         }
-		if (!isNetworkAvailable())
+		if (!Utils.isNetworkAvailable(this))
 		{
 			onError(null);
 		}
@@ -217,11 +216,4 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 			finish();
         }
     }
-	
-	private boolean isNetworkAvailable()
-	{
-		ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-		return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-	}
 }

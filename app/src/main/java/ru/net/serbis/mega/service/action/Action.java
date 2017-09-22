@@ -49,6 +49,10 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 	
 	public void execute()
 	{
+		if (!Utils.isNetworkAvailable(context))
+		{
+			onError("network is not available");
+		}
 		AccountManager manager = AccountManager.get(context);
 		megaApi = app.getUserMegaApi(email);
 		if (megaApi != null)
@@ -79,8 +83,13 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 	public void onError(MegaError error)
 	{
 		String message = error.getErrorCode() + ": " + error.getErrorString();
-		Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-		sendResult(Constants.ERROR, message);
+		onError(message);
+	}	
+	
+	public void onError(String error)
+	{
+		Toast.makeText(context, error, Toast.LENGTH_LONG).show();
+		sendResult(Constants.ERROR, error);
 	}	
 	
 	@Override

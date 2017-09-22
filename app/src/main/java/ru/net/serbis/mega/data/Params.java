@@ -14,12 +14,35 @@ public class Params
     
     public Params(Intent intent)
     {
-        account = intent.getParcelableExtra(Constants.ACCOUNT);
-        selectMode = intent.getBooleanExtra(Constants.SELECT_MODE, false);
-        action = intent.getIntExtra(Constants.ACTION, 0);
-        path = intent.getStringExtra(Constants.PATH);
-        selectPath = intent.getStringExtra(Constants.SELECT_PATH);
+		init(intent);
     }
+
+	private void init(Intent intent)
+	{
+		if (intent != null)
+		{
+			if (intent.hasExtra(Constants.ACCOUNT))
+			{
+				account = intent.getParcelableExtra(Constants.ACCOUNT);
+			}
+			if (intent.hasExtra(Constants.SELECT_MODE))
+			{
+				selectMode = intent.getBooleanExtra(Constants.SELECT_MODE, false);
+			}
+			if (intent.hasExtra(Constants.ACTION))
+			{
+				action = intent.getIntExtra(Constants.ACTION, 0);
+			}
+			if (intent.hasExtra(Constants.PATH))
+			{
+				path = intent.getStringExtra(Constants.PATH);
+			}
+			if (intent.hasExtra(Constants.SELECT_PATH))
+			{
+				selectPath = intent.getStringExtra(Constants.SELECT_PATH);
+			}
+		}
+	}
     
     public void setActionMove(Intent intent, String path)
     {
