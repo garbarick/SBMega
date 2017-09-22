@@ -52,6 +52,7 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 		if (!Utils.isNetworkAvailable(context))
 		{
 			onError("network is not available");
+			return;
 		}
 		AccountManager manager = AccountManager.get(context);
 		megaApi = app.getUserMegaApi(email);

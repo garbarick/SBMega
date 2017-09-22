@@ -64,21 +64,6 @@ public class Utils
 	public static boolean isNetworkAvailable(Context context)
 	{
 		ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		NetworkInfo networkInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-		if (networkInfo != null && networkInfo.isConnected())
-		{
-			return true;
-		}
-		networkInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-		if (networkInfo != null && networkInfo.isConnected())
-		{
-			return true;
-		}
-		networkInfo = manager.getActiveNetworkInfo();
-		if (networkInfo != null && networkInfo.isConnected())
-		{
-			return true;
-		}
-		return false;
+	    return manager.getActiveNetworkInfo() != null;
 	}
 }
