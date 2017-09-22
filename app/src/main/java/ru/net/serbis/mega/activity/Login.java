@@ -34,7 +34,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
         }
 		if (!Utils.isNetworkAvailable(this))
 		{
-			onError(null);
+			onError("network is not available");
 		}
         if (params.account != null)
 		{
@@ -109,9 +109,10 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	@Override
 	public void onError(MegaError error)
 	{
+		String errorMessage = null;
 		if (error != null)
 		{
-			String errorMessage = error.getErrorString();
+			errorMessage = error.getErrorString();
 			switch (error.getErrorCode())
 			{
 				case MegaError.API_ENOENT:
@@ -119,7 +120,16 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 					errorMessage = getString(R.string.error_incorrect_email_or_password);
 					break;
 			}
-			Toast.makeText(this, error.getErrorCode() + ": " + errorMessage, Toast.LENGTH_LONG).show();
+			errorMessage = error.getErrorCode() + ": " + errorMessage;
+		}
+		onError(errorMessage);
+	}
+	
+	public void onError(String error)
+	{
+		if (error != null)
+		{
+			Toast.makeText(this, error, Toast.LENGTH_LONG).show();
 		}
 
 		if (create)
