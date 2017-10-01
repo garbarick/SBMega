@@ -11,15 +11,22 @@ public class GetFile extends Action
 	{
 		super(app, msg);
 	}
-	
+
 	@Override
 	public void onFetched()
 	{
 		MegaNode node = megaApi.getNodeByPath(path);
-		megaApi.startDownload(
-			node, 
-			Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/",
-			new BrowserTask(megaApi, this));
+		if (node != null && node.isFile())
+		{
+			megaApi.startDownload(
+				node, 
+				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/",
+				new BrowserTask(megaApi, this));
+		}
+		else
+		{
+			sendError(Constants.ERROR_FILE_IS_NOT_FOUND, context.getResources().getString(R.string.error_file_is_not_found));
+		}
 	}
 
 	@Override

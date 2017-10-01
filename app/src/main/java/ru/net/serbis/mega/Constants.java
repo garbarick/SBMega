@@ -15,6 +15,7 @@ public interface Constants
     String FILES_LIST = TYPE + ".FILES_LIST";
 	String FILE = TYPE + ".FILE";
 	String ERROR = TYPE + ".ERROR";
+	String ERROR_CODE = TYPE + ".ERROR_CODE";
 	String RESULT = TYPE + ".RESULT";
 	
 	String SBMEGA = "sbmega";
@@ -29,4 +30,7 @@ public interface Constants
 	int ACTION_PING = 106;
 	
 	Pattern PATH_PATTERN = Pattern.compile("^\\/\\/" + SBMEGA + "\\/(.*?)(\\/.*)$");
+
+	int ERROR_NETWORK_IS_NOT_AVAILABLE = 400;
+	int ERROR_FILE_IS_NOT_FOUND = 401;
 }

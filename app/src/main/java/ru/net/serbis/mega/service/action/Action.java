@@ -51,7 +51,7 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 	{
 		if (!Utils.isNetworkAvailable(context))
 		{
-			onError("network is not available");
+			sendError(Constants.ERROR_NETWORK_IS_NOT_AVAILABLE, context.getResources().getString(R.string.error_network_is_not_available));
 			return;
 		}
 		AccountManager manager = AccountManager.get(context);
@@ -83,26 +83,34 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 	@Override
 	public void onError(MegaError error)
 	{
-		String message = error.getErrorCode() + ": " + error.getErrorString();
-		onError(message);
-	}	
-	
-	public void onError(String error)
-	{
-		Toast.makeText(context, error, Toast.LENGTH_LONG).show();
-		sendResult(Constants.ERROR, error);
-	}	
+		sendError(error.getErrorCode(), error.getErrorString());
+	}
 	
 	@Override
 	public void onFetched()
 	{
 	}
 
-	protected void sendResult(String key, Object value)
+	protected void sendResult(String key, String value)
+	{
+        Bundle data = new Bundle();
+        data.putString(key, value);
+        sendResult(data);
+	}
+	
+	protected void sendError(int errorCode, String error)
+	{
+		Toast.makeText(context, errorCode + ": " + error, Toast.LENGTH_LONG).show();
+		
+		Bundle data = new Bundle();
+		data.putInt(Constants.ERROR_CODE, errorCode);
+        data.putString(Constants.ERROR, error);
+		sendResult(data);
+	}
+	
+	protected void sendResult(Bundle data)
 	{
         Message msg = Message.obtain();
-        Bundle data = new Bundle();
-        data.putString(key, String.valueOf(value));
         msg.setData(data);
         try
         {

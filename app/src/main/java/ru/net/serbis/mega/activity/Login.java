@@ -34,7 +34,7 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
         }
 		if (!Utils.isNetworkAvailable(this))
 		{
-			onError("network is not available");
+			onError(Constants.ERROR_NETWORK_IS_NOT_AVAILABLE, getResources().getString(R.string.error_network_is_not_available));
 		}
         if (params.account != null)
 		{
@@ -109,27 +109,22 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	@Override
 	public void onError(MegaError error)
 	{
-		String errorMessage = null;
-		if (error != null)
+		String errorMessage = error.getErrorString();
+		switch (error.getErrorCode())
 		{
-			errorMessage = error.getErrorString();
-			switch (error.getErrorCode())
-			{
-				case MegaError.API_ENOENT:
-				case MegaError.API_EARGS:
-					errorMessage = getString(R.string.error_incorrect_email_or_password);
-					break;
-			}
-			errorMessage = error.getErrorCode() + ": " + errorMessage;
+			case MegaError.API_ENOENT:
+			case MegaError.API_EARGS:
+				errorMessage = getString(R.string.error_incorrect_email_or_password);
+				break;
 		}
-		onError(errorMessage);
+		onError(error.getErrorCode(), errorMessage);
 	}
-	
-	public void onError(String error)
+
+	private void onError(int errorCode, String error)
 	{
 		if (error != null)
 		{
-			Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+			Toast.makeText(this, errorCode + ": " +  error, Toast.LENGTH_LONG).show();
 		}
 
 		if (create)
