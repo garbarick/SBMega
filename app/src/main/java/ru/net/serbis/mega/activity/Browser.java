@@ -75,6 +75,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 				{
 					Intent intent = new Intent(this, Browser.class);
                     params.setActionMove(intent, megaApi.getNodePath(node));
+					params.setAccount(intent, params.account);
 					startActivityForResult(intent, 0);
 				}
 				return true;
