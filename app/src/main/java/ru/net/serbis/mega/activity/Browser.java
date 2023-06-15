@@ -240,6 +240,14 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 					finish();
 				}
 				break;
+
+            case R.id.cancel:
+                {
+                    Intent intent = new Intent(getIntent());
+                    setResult(RESULT_CANCELED, intent);
+                    finish();
+                }
+                break;
 		}
 		super.onClick(view);
 	}
