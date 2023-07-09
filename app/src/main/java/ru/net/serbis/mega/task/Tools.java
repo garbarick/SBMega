@@ -14,7 +14,7 @@ public class Tools
 		return getProgress(request.getTotalBytes(), request.getTransferredBytes());
 	}
 	
-	private static int getProgress(long total, long current)
+	public static int getProgress(long total, long current)
 	{
 		if (total > 0)
 		{

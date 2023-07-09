@@ -14,5 +14,5 @@ public interface BrowserCallback
 	
 	void onMoveFinish();
 	
-	void progress(int persent);
+	void progress(int progress);
 }

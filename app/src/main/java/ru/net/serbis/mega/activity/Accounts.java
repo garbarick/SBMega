@@ -50,7 +50,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 					}
 					catch (Throwable e)
 					{
-						Log.info(this, e);
+						Log.error(this, e);
 					}
 				}
 			},
@@ -265,7 +265,15 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 				@Override
 				public void handleMessage(Message msg)
 				{
-					Toast.makeText(Accounts.this, msg.getData().getString(responseKey), Toast.LENGTH_LONG).show();
+                    if (msg.getData().containsKey(Constants.PROGRESS))
+                    {
+                        int progress = Integer.valueOf(msg.getData().getString(Constants.PROGRESS));
+                        progress(progress);
+                    }
+                    else if (msg.getData().containsKey(responseKey))
+                    {
+                        Toast.makeText(Accounts.this, msg.getData().getString(responseKey), Toast.LENGTH_LONG).show();
+                    }
 				}
 			}
 		);
@@ -275,7 +283,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 		}
 		catch (RemoteException e)
 		{
-			Log.info(this, e);
+			Log.error(this, e);
 		}
 	}
     
@@ -318,4 +326,10 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 			null,
 			Constants.RESULT);
     }
+
+    private void progress(int progress)
+    {
+        ProgressBar bar = Tools.findView(this, R.id.login_progress);
+        bar.setProgress(progress);
+	}
 }

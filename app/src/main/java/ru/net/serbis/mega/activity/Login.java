@@ -145,10 +145,10 @@ public class Login extends AccountAuthenticatorActivity implements LoginCallback
 	}
 
 	@Override
-	public void progress(int persent)
+	public void progress(int progress)
 	{
 		ProgressBar bar = Tools.findView(this, R.id.login_progress);
-		bar.setProgress(persent);
+		bar.setProgress(progress);
 	}
 
 	@Override

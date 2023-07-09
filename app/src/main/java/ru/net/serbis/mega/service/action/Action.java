@@ -11,7 +11,7 @@ import ru.net.serbis.mega.account.*;
 import ru.net.serbis.mega.task.*;
 import android.text.*;
 
-public class Action implements LoginCallback, FetchCallback, BrowserCallback
+public class Action implements LoginCallback, FetchCallback, BrowserCallback, FileListCallback
 {
 	protected App app;
 	protected MegaApiAndroid megaApi;
@@ -76,8 +76,9 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 	}
 
 	@Override
-	public void progress(int persent)
+	public void progress(int progress)
 	{
+        sendResult(Constants.PROGRESS, String.valueOf(progress));
 	}
 
 	@Override
@@ -118,7 +119,7 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
         }
         catch (RemoteException e)
         {
-            Log.info(this, e);
+            Log.error(this, e);
         }
 	}
 	
@@ -141,4 +142,9 @@ public class Action implements LoginCallback, FetchCallback, BrowserCallback
 	public void onMoveFinish()
 	{
 	}
+
+    @Override
+    public void result(String data)
+    {
+    }
 }

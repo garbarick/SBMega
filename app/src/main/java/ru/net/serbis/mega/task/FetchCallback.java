@@ -4,7 +4,7 @@ import nz.mega.sdk.*;
 
 public interface FetchCallback
 {
-	void progress(int persent);
+	void progress(int progress);
 
 	void onError(MegaError error);
 	
