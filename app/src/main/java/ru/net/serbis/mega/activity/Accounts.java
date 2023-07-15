@@ -267,7 +267,7 @@ public class Accounts extends ListActivity<Account> implements OnAccountsUpdateL
 				{
                     if (msg.getData().containsKey(Constants.PROGRESS))
                     {
-                        int progress = Integer.valueOf(msg.getData().getString(Constants.PROGRESS));
+                        int progress = msg.getData().getInt(Constants.PROGRESS);
                         progress(progress);
                     }
                     else if (msg.getData().containsKey(responseKey))
