@@ -1,24 +1,25 @@
 package ru.net.serbis.mega.data;
+
 import java.io.*;
 
 public class Token implements Serializable
 {
-	private String publicKey;
-	private String privateKey;
+	private String email;
+	private String password;
 
-	public Token(String publicKey, String privateKey)
-	{
-		this.publicKey = publicKey;
-		this.privateKey = privateKey;
-	}
+    public Token(String email, String password)
+    {
+        this.email = email;
+        this.password = password;
+    }
 
-	public String getPublicKey()
-	{
-		return publicKey;
-	}
+    public String getEmail()
+    {
+        return email;
+    }
 
-	public String getPrivateKey()
-	{
-		return privateKey;
-	}
+    public String getPassword()
+    {
+        return password;
+    }
 }

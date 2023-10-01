@@ -95,7 +95,7 @@ public class Browser extends ListActivity<MegaNode> implements BrowserCallback, 
 				return true;
 
 			case R.id.download:
-				megaApi.startDownload(node, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/", task);
+				megaApi.startDownload(node, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/", null, null, false, null, task);
 				return true;
         }
 		return super.onItemMenuSelected(id, node);

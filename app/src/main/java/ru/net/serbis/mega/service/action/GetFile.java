@@ -21,6 +21,7 @@ public class GetFile extends Action
 			megaApi.startDownload(
 				node, 
 				Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS) + "/",
+                null, null, false, null,
 				new BrowserTask(megaApi, this));
 		}
 		else

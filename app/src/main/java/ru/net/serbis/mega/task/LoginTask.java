@@ -2,7 +2,6 @@ package ru.net.serbis.mega.task;
 
 import android.os.*;
 import nz.mega.sdk.*;
-import ru.net.serbis.mega.*;
 import ru.net.serbis.mega.data.*;
 
 public class LoginTask extends AsyncTask<String, Void, Token> implements MegaRequestListenerInterface
@@ -10,7 +9,6 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
     private MegaApiAndroid megaApi;
     private LoginCallback callback;
 	private Token token;
-	private String email;
 
 	public LoginTask(MegaApiAndroid megaApi)
     {
@@ -31,10 +29,7 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
 	
 	public Token getToken(String email, String password)
     {
-		this.email = email;
-        String privateKey = megaApi.getBase64PwKey(password);
-        String publicKey = megaApi.getStringHash(privateKey, email);
-        return new Token(publicKey, privateKey);
+        return new Token(email, password);
     }
 
     @Override
@@ -46,7 +41,7 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
 	public void login(Token token)
 	{
 		this.token = token;
-		megaApi.fastLogin(email, token.getPublicKey(), token.getPrivateKey(), this);
+        megaApi.login(token.getEmail(), token.getPassword(), this);
 	}
 	
 	public void onRequestStart(MegaApiJava api, MegaRequest request)
@@ -64,7 +59,7 @@ public class LoginTask extends AsyncTask<String, Void, Token> implements MegaReq
         	switch (request.getType())
         	{
             	case MegaRequest.TYPE_LOGIN:
-					callback.onLogin(email);
+					callback.onLogin(token.getEmail());
             		break;
 			}
         }
