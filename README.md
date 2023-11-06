@@ -1,4 +1,4 @@
-SBShareFiles
+SBMega
 
 The tool provides access to the MEGA service
 
